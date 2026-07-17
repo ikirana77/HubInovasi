@@ -1,0 +1,7 @@
+.DS_Store
+*.log
+.env
+config/local.php
+uploads/projects/*/*/*
+!uploads/projects/**/.gitkeep
+!uploads/projects/.htaccess
