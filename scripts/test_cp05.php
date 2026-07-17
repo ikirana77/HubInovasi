@@ -11,6 +11,11 @@ try {
     $version = $pdo->query('SELECT VERSION()')->fetchColumn();
     echo "[PASS] Database connected: MySQL {$version}\n";
 
+    $adminEmail = 'cp05-admin-' . bin2hex(random_bytes(4)) . '@example.test';
+    $adminStmt = $pdo->prepare("INSERT INTO admin_users (full_name,email,password_hash,role,is_active) VALUES (?,?,?,'admin',1)");
+    $adminStmt->execute(['CP05 Test Admin', $adminEmail, password_hash('Temporary-Test-Password-123!', PASSWORD_DEFAULT)]);
+    $adminId = (int) $pdo->lastInsertId();
+
     $payload = array_fill_keys(SUBMISSION_FIELDS, null);
     $payload = array_merge($payload, [
         'submitter_name' => 'CP05 Test User',
@@ -38,7 +43,7 @@ try {
     if (($pending['status'] ?? null) !== 'pending_review') throw new RuntimeException('Pending update gagal.');
     echo "[PASS] Submission updated to pending_review\n";
 
-    if (!admin_update_submission((int) $pending['id'], 'needs_revision', 'Automated CP05 test')) throw new RuntimeException('Admin update gagal.');
+    if (!admin_update_submission((int) $pending['id'], 'needs_revision', 'Automated CP05 test', $adminId)) throw new RuntimeException('Admin update gagal.');
     $reviewed = find_submission_by_token($draft['public_token']);
     if (($reviewed['status'] ?? null) !== 'needs_revision') throw new RuntimeException('Admin status readback gagal.');
     echo "[PASS] Admin changed status to needs_revision\n";
@@ -56,7 +61,8 @@ try {
     if (!empty($hers['links'])) throw new RuntimeException('HERS must not expose unprovided CTA links.');
     echo "[PASS] HERS pitch loaded from database with no dummy CTA\n";
 
-    if (!admin_update_submission((int) $pending['id'], 'published', 'Automated publication test')) throw new RuntimeException('Admin publication gagal.');
+    $pending = save_submission($payload, $draft['public_token'], 'pending_review');
+    if (!admin_update_submission((int) $pending['id'], 'published', 'Automated publication test', $adminId)) throw new RuntimeException('Admin publication gagal.');
     $publishedSubmission = find_submission_by_token($draft['public_token']);
     if (empty($publishedSubmission['linked_project_id'])) throw new RuntimeException('Published submission tidak dipautkan kepada projek.');
     $publishedProject = $pdo->prepare("SELECT review_status FROM projects WHERE id = ?");

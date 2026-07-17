@@ -1,7 +1,26 @@
 <?php
 declare(strict_types=1);
 
+if (PHP_SAPI !== 'cli') {
+    set_exception_handler(static function (Throwable $exception): void {
+        error_log('Unhandled application error: ' . $exception->getMessage());
+        if (!headers_sent()) http_response_code(500);
+        echo '<!DOCTYPE html><html lang="ms"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><title>Ralat Sistem | HubInovasi</title></head><body><main><h1>Permintaan tidak dapat diproses.</h1><p>Sila cuba lagi sebentar atau hubungi pentadbir sistem.</p></main></body></html>';
+    });
+}
+
+const ADMIN_IDLE_TIMEOUT = 1800;
+const ADMIN_ABSOLUTE_LIFETIME = 28800;
+
 if (session_status() !== PHP_SESSION_ACTIVE) {
+    $isHttps = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'secure' => $isHttps,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
     session_start();
 }
 
@@ -54,5 +73,32 @@ function e(?string $value): string
 
 function admin_is_authenticated(): bool
 {
-    return !empty($_SESSION['admin_authenticated']);
+    if (empty($_SESSION['admin_user_id']) || empty($_SESSION['admin_login_at']) || empty($_SESSION['admin_last_activity'])) {
+        return false;
+    }
+    $now = time();
+    if (($now - (int) $_SESSION['admin_last_activity']) > ADMIN_IDLE_TIMEOUT || ($now - (int) $_SESSION['admin_login_at']) > ADMIN_ABSOLUTE_LIFETIME) {
+        destroy_session();
+        return false;
+    }
+    $_SESSION['admin_last_activity'] = $now;
+    return true;
+}
+
+function destroy_session(): void
+{
+    $_SESSION = [];
+    if (ini_get('session.use_cookies')) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'] ?? '', (bool) $params['secure'], (bool) $params['httponly']);
+    }
+    if (session_status() === PHP_SESSION_ACTIVE) session_destroy();
+}
+
+function require_admin(): void
+{
+    if (!admin_is_authenticated()) {
+        header('Location: login.php');
+        exit;
+    }
 }
