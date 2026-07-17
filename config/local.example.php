@@ -9,5 +9,4 @@ return [
         'username' => 'your_database_user',
         'password' => 'your_database_password',
     ],
-    'admin_password' => 'choose-a-strong-local-password',
 ];

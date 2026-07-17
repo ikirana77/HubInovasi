@@ -40,10 +40,17 @@ function save_submission(array $payload, ?string $token, string $status): array
     if (!in_array($status, $allowed, true)) {
         throw new InvalidArgumentException('Status submission tidak sah.');
     }
+    if ($status === 'pending_review' && !submission_is_complete($payload)) {
+        throw new RuntimeException('Submission mesti lengkap sebelum dihantar untuk semakan.');
+    }
 
     $existing = $token ? find_submission_by_token($token) : null;
+    if ($token && !$existing) throw new RuntimeException('Submission tidak dijumpai.');
     if ($existing && !in_array($existing['status'], ['draft', 'needs_revision'], true)) {
         throw new RuntimeException('Submission ini tidak lagi boleh disunting.');
+    }
+    if ($existing && $existing['status'] === 'needs_revision' && $status !== 'pending_review') {
+        throw new RuntimeException('Submission pembetulan mesti dihantar semula untuk semakan.');
     }
 
     if (!$existing) {
@@ -77,9 +84,85 @@ function submission_is_complete(array $payload): bool
     return filter_var($payload['submitter_email'], FILTER_VALIDATE_EMAIL) !== false;
 }
 
-function get_all_submissions(): array
+function allowed_submission_transitions(string $actor = 'admin'): array
 {
-    return db()->query('SELECT * FROM submissions ORDER BY updated_at DESC')->fetchAll();
+    if ($actor === 'submitter') return ['draft' => ['pending_review'], 'needs_revision' => ['pending_review']];
+    return [
+        'pending_review' => ['needs_revision','published','archived'],
+        'published' => ['archived'],
+    ];
+}
+
+function can_transition_submission(string $from, string $to, string $actor = 'admin'): bool
+{
+    return in_array($to, allowed_submission_transitions($actor)[$from] ?? [], true);
+}
+
+function submission_row_is_complete(array $submission): bool
+{
+    return submission_is_complete($submission);
+}
+
+function submission_status_label(string $status): string
+{
+    return [
+        'draft' => 'Draf', 'pending_review' => 'Menunggu Semakan', 'needs_revision' => 'Perlu Pembetulan',
+        'published' => 'Diterbitkan', 'archived' => 'Diarkibkan',
+    ][$status] ?? $status;
+}
+
+function submission_summary_counts(): array
+{
+    $counts = ['all' => 0, 'pending_review' => 0, 'needs_revision' => 0, 'published' => 0, 'archived' => 0];
+    $stmt = db()->prepare('SELECT status, COUNT(*) total FROM submissions GROUP BY status');
+    $stmt->execute();
+    foreach ($stmt->fetchAll() as $row) {
+        $counts[$row['status']] = (int) $row['total'];
+        $counts['all'] += (int) $row['total'];
+    }
+    return $counts;
+}
+
+function search_submissions(string $status = '', string $query = '', int $page = 1, int $perPage = 10): array
+{
+    $allowedStatuses = ['draft','pending_review','needs_revision','published','archived'];
+    $conditions = [];
+    $params = [];
+    if (in_array($status, $allowedStatuses, true)) { $conditions[] = 'status = ?'; $params[] = $status; }
+    if ($query !== '') {
+        $conditions[] = '(project_name LIKE ? OR submitter_name LIKE ? OR submitter_email LIKE ?)';
+        $term = '%' . $query . '%';
+        array_push($params, $term, $term, $term);
+    }
+    $where = $conditions ? ' WHERE ' . implode(' AND ', $conditions) : '';
+    $count = db()->prepare('SELECT COUNT(*) FROM submissions' . $where);
+    $count->execute($params);
+    $total = (int) $count->fetchColumn();
+    $pages = max(1, (int) ceil($total / $perPage));
+    $page = max(1, min($page, $pages));
+    $offset = ($page - 1) * $perPage;
+    $stmt = db()->prepare('SELECT id,project_name,submitter_name,submitter_email,project_development_status,evidence_status,status,created_at,submitted_at,updated_at FROM submissions' . $where . ' ORDER BY updated_at DESC LIMIT ? OFFSET ?');
+    $position = 1;
+    foreach ($params as $param) $stmt->bindValue($position++, $param, PDO::PARAM_STR);
+    $stmt->bindValue($position++, $perPage, PDO::PARAM_INT);
+    $stmt->bindValue($position, $offset, PDO::PARAM_INT);
+    $stmt->execute();
+    return ['items' => $stmt->fetchAll(), 'total' => $total, 'page' => $page, 'pages' => $pages];
+}
+
+function find_submission_by_id(int $id): ?array
+{
+    if ($id < 1) return null;
+    $stmt = db()->prepare('SELECT s.*, p.slug linked_project_slug, p.name linked_project_name FROM submissions s LEFT JOIN projects p ON p.id=s.linked_project_id WHERE s.id=? LIMIT 1');
+    $stmt->execute([$id]);
+    return $stmt->fetch() ?: null;
+}
+
+function submission_status_history(int $id): array
+{
+    $stmt = db()->prepare('SELECT h.*, a.full_name admin_name FROM submission_status_history h LEFT JOIN admin_users a ON a.id=h.admin_user_id WHERE h.submission_id=? ORDER BY h.created_at DESC, h.id DESC');
+    $stmt->execute([$id]);
+    return $stmt->fetchAll();
 }
 
 function slugify_project(string $name): string
@@ -130,10 +213,10 @@ function publish_submission_as_project(PDO $pdo, array $submission): int
     return $projectId;
 }
 
-function admin_update_submission(int $id, string $status, ?string $notes): bool
+function transition_submission_status(int $id, string $status, ?int $adminId, ?string $notes): array
 {
-    $allowed = ['draft','pending_review','needs_revision','published','archived'];
-    if (!in_array($status, $allowed, true)) return false;
+    $notes = trim((string) $notes);
+    if ($id < 1 || !$adminId) return ['success' => false, 'message' => 'Permintaan tidak sah.'];
     $pdo = db();
     $ownsTransaction = !$pdo->inTransaction();
     if ($ownsTransaction) $pdo->beginTransaction();
@@ -142,6 +225,19 @@ function admin_update_submission(int $id, string $status, ?string $notes): bool
         $select->execute([$id]);
         $submission = $select->fetch();
         if (!$submission) throw new RuntimeException('Submission tidak dijumpai.');
+        $from = $submission['status'];
+        if (!can_transition_submission($from, $status, 'admin')) {
+            if ($ownsTransaction) $pdo->rollBack();
+            return ['success' => false, 'message' => 'Perubahan status tidak dibenarkan.'];
+        }
+        if (in_array($status, ['needs_revision','archived'], true) && $notes === '') {
+            if ($ownsTransaction) $pdo->rollBack();
+            return ['success' => false, 'message' => 'Nota admin diperlukan untuk tindakan ini.'];
+        }
+        if ($status === 'published' && !submission_row_is_complete($submission)) {
+            if ($ownsTransaction) $pdo->rollBack();
+            return ['success' => false, 'message' => 'Submission belum lengkap dan tidak boleh diterbitkan.'];
+        }
 
         $projectId = $submission['linked_project_id'];
         if ($status === 'published') {
@@ -151,13 +247,22 @@ function admin_update_submission(int $id, string $status, ?string $notes): bool
             $archive->execute([$projectId]);
         }
 
-        $stmt = $pdo->prepare('UPDATE submissions SET status = ?, admin_notes = ?, linked_project_id = ?, reviewed_at = CURRENT_TIMESTAMP WHERE id = ?');
-        $stmt->execute([$status, $notes ?: null, $projectId, $id]);
+        $stmt = $pdo->prepare('UPDATE submissions SET status=?, admin_notes=?, linked_project_id=?, reviewed_at=CURRENT_TIMESTAMP, reviewed_by_admin_id=? WHERE id=?');
+        $stmt->execute([$status, $notes ?: null, $projectId, $adminId, $id]);
+        $history = $pdo->prepare('INSERT INTO submission_status_history (submission_id,from_status,to_status,admin_user_id,admin_notes) VALUES (?,?,?,?,?)');
+        $history->execute([$id, $from, $status, $adminId, $notes ?: null]);
         if ($ownsTransaction) $pdo->commit();
-        return true;
+        return ['success' => true, 'message' => 'Status submission berjaya dikemas kini.'];
     } catch (Throwable $exception) {
         if ($ownsTransaction && $pdo->inTransaction()) $pdo->rollBack();
         error_log('Admin submission update failed: ' . $exception->getMessage());
-        return false;
+        return ['success' => false, 'message' => 'Status tidak dapat dikemas kini.'];
     }
+}
+
+/** Compatibility untuk ujian CP05; UI admin CP06 wajib menggunakan transition_submission_status(). */
+function admin_update_submission(int $id, string $status, ?string $notes, ?int $adminId = null): bool
+{
+    if (!$adminId) return false;
+    return transition_submission_status($id, $status, $adminId, $notes)['success'];
 }
