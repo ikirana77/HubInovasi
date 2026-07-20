@@ -1,0 +1,160 @@
+:root {
+    --brand-navy: #111b64;
+    --brand-magenta: #ed006c;
+    --brand-orange: #ff641f;
+    --brand-line: rgba(17, 27, 100, .16);
+}
+
+.brand--image {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0;
+    min-width: 0;
+}
+
+.brand--image::after { display: none !important; }
+.brand--image picture { display: block; line-height: 0; }
+.brand__logo { display: block; width: clamp(225px, 17vw, 290px); height: auto; }
+
+.site-header .brand--image {
+    min-width: clamp(225px, 17vw, 290px);
+    transform: none;
+}
+
+.site-header .primary-nav ul { gap: clamp(12px, 1.25vw, 22px); }
+.site-header .primary-nav li { flex: 0 0 auto; }
+.site-header .primary-nav a { white-space: nowrap; }
+.site-header .language-switcher-item { order: 0 !important; }
+.site-header .language-switcher { flex: 0 0 auto; white-space: nowrap; }
+.site-header .nav-cta { min-width: 136px; }
+
+.brand-endorsement {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) 1px minmax(220px, 1fr);
+    align-items: center;
+    gap: clamp(22px, 3vw, 42px);
+    margin-bottom: 46px;
+    padding: 24px clamp(24px, 4vw, 44px);
+    border: 1px solid var(--brand-line);
+    border-radius: 14px;
+    background: #fff;
+    color: #171717;
+    box-shadow: 0 12px 34px rgba(17, 27, 100, .06);
+}
+
+.brand-endorsement__hub { display: block; justify-self: end; line-height: 0; }
+.brand-endorsement__hub img { display: block; width: min(100%, 290px); height: auto; }
+.brand-endorsement__divider { width: 1px; height: 58px; background: var(--brand-line); }
+.brand-endorsement__institution { display: flex; align-items: center; gap: 20px; min-width: 0; }
+.brand-endorsement__institution span {
+    flex: 0 0 92px;
+    color: #68635e;
+    font-size: .68rem;
+    font-weight: 800;
+    line-height: 1.35;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+.brand-endorsement__institution img { display: block; width: min(100%, 265px); height: auto; }
+
+.site-footer--launchpad { padding-top: 44px !important; }
+.site-footer:not(.site-footer--launchpad) .brand-endorsement { margin-bottom: 52px; }
+.site-footer:not(.site-footer--launchpad) .site-footer__grid > div:first-child { max-width: 340px; }
+.site-footer:not(.site-footer--launchpad) .site-footer__grid > div:first-child p { margin-top: 0; }
+
+.about-ownership {
+    display: grid;
+    grid-template-columns: minmax(220px, .85fr) 1px minmax(300px, 1.15fr);
+    align-items: center;
+    gap: clamp(28px, 5vw, 70px);
+    margin: 18px 0 42px;
+    padding: clamp(28px, 4vw, 50px);
+    border-color: var(--brand-line);
+    background: linear-gradient(135deg, #fff 0%, #fff8fb 52%, #fff7f0 100%);
+}
+.about-ownership__hub img { display: block; width: min(100%, 400px); height: auto; }
+.about-ownership__divider { width: 1px; height: 118px; background: var(--brand-line); }
+.about-ownership__institution { display: grid; gap: 16px; }
+.about-ownership__institution > span {
+    color: var(--brand-magenta);
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+.about-ownership__institution img { display: block; width: min(100%, 430px); height: auto; }
+.about-ownership__institution p { max-width: 650px; margin: 0; color: #625d58; }
+
+.portal-brand { display: inline-flex; align-items: center; gap: 14px; color: inherit; text-decoration: none; }
+.portal-brand img { display: block; width: 210px; height: auto; }
+.portal-brand--compact img { width: 180px; }
+.portal-brand__context {
+    padding-left: 14px;
+    border-left: 1px solid var(--brand-line);
+    color: var(--brand-magenta);
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+.admin-login__card .portal-brand { margin-bottom: 18px; }
+.admin-header__identity { display: grid; gap: 20px; }
+.admin-detail-header .portal-brand img { width: 165px; }
+.admin-detail-header .container { gap: 22px; }
+.admin-detail-header .admin-top-actions { margin-left: auto; }
+.member-header .portal-brand picture { display: block; line-height: 0; }
+
+@media (max-width: 1180px) {
+    .brand__logo { width: 225px; }
+    .site-header .brand--image { min-width: 225px; }
+    .site-header .primary-nav ul { gap: 11px; }
+    .public-mockup-page .nav-search-item { display: none; }
+    .public-mockup-page .language-switcher-item { display: list-item; }
+    .brand-endorsement__institution { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .brand-endorsement__institution span { flex-basis: auto; }
+}
+
+@media (max-width: 1020px) {
+    .site-header__inner { min-height: 74px; }
+    .site-header .nav-toggle { display: block; position: relative; z-index: 102; }
+    .site-header .primary-nav {
+        display: none;
+        position: fixed;
+        inset: 74px 0 0;
+        padding: 28px;
+        overflow-y: auto;
+        border-top: 1px solid var(--brand-line);
+        background: #fffdf9;
+    }
+    .nav-open .site-header .primary-nav { display: block; }
+    .site-header .primary-nav ul { align-items: stretch; flex-direction: column; gap: 0; }
+    .site-header .primary-nav li { border-bottom: 1px solid rgba(17,27,100,.14); }
+    .site-header .primary-nav li.language-switcher-item { padding: 14px 4px; }
+    .site-header .primary-nav a { display: block; padding: 14px 4px; font-size: 1rem; }
+    .site-header .primary-nav a::after { display: none; }
+    .site-header .primary-nav .nav-cta { width: 100%; margin-top: 16px; text-align: center; }
+    .site-header .nav-search-item { display: none; }
+}
+
+@media (max-width: 760px) {
+    .brand__logo { width: 54px; max-height: 50px; object-fit: contain; }
+    .site-header .brand--image { min-width: 54px; }
+    .brand-endorsement,
+    .about-ownership {
+        grid-template-columns: 1fr;
+        justify-items: start;
+        gap: 24px;
+    }
+    .brand-endorsement__hub { justify-self: start; }
+    .brand-endorsement__divider,
+    .about-ownership__divider { width: 100%; height: 1px; }
+    .brand-endorsement__institution { width: 100%; }
+    .brand-endorsement__hub img { width: min(100%, 250px); }
+    .brand-endorsement__institution img { width: min(100%, 280px); }
+    .portal-brand img { width: 170px; }
+    .portal-brand__context { font-size: .62rem; }
+    .member-header .portal-brand img { width: 50px; max-height: 48px; object-fit: contain; }
+    .admin-detail-header .container { flex-wrap: wrap; }
+    .admin-detail-header .admin-top-actions { order: 3; width: 100%; margin-left: 0; }
+}

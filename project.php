@@ -1,255 +1,60 @@
 <?php
-$slug = isset($_GET['slug']) ? trim((string) $_GET['slug']) : '';
 require_once __DIR__ . '/includes/project-repository.php';
+require_once __DIR__ . '/includes/public-ui.php';
+$slug = trim((string)($_GET['slug'] ?? ''));
 $project = $slug !== '' ? get_public_project_by_slug($slug) : null;
-
-$pageTitle = $project ? $project['name'] : 'Projek Tidak Dijumpai';
-$activePage = 'explore';
+$pageTitle = $project ? $project['name'] : tr('Projek Tidak Dijumpai','Project Not Found');
+$activePage = 'areas';
+enable_public_mockup('mockup-project');
+$visible = $project && !empty($project['detail_available']);
+$programmeSummary = $project ? implode(', ', $project['programmes'] ?? []) : '';
+$primaryCollaborator = $project['collaborators'][0]['name'] ?? '';
+function pm_text($value): string { if(is_array($value)) return (string)($value['text'] ?? $value['title'] ?? implode(' ',array_filter($value,'is_string'))); return (string)$value; }
 require __DIR__ . '/includes/header.php';
 
-$projectVisible = $project && !empty($project['detail_available']);
-$showComingSoon = $project && !$projectVisible;
+
+// DURIAN_RADAR_FORCE_IMAGE
+if (($slug ?? ($_GET['slug'] ?? '')) === 'durian-radar') {
+    if (isset($project) && is_array($project)) {
+        $project['application_screenshot'] =
+            'assets/images/projects/durian-radar-main.png?v=' .
+            filemtime(__DIR__ . '/assets/images/projects/durian-radar-main.png');
+
+        $project['image'] =
+            'assets/images/projects/durian-radar-main.png?v=' .
+            filemtime(__DIR__ . '/assets/images/projects/durian-radar-main.png');
+
+        $project['hero_image'] =
+            'assets/images/projects/durian-radar-main.png?v=' .
+            filemtime(__DIR__ . '/assets/images/projects/durian-radar-main.png');
+    }
+}
+
+
+
 ?>
-<main id="main-content" class="inner-page project-page">
-    <?php if ($project && $projectVisible): ?>
-        <section class="project-hero project-hero--hers" aria-labelledby="project-title">
-            <div class="container project-hero__inner">
-                <div class="project-hero__topbar">
-                    <a class="project-back-link" href="explore.php">← Kembali ke Teroka Inovasi</a>
-                    <span class="project-number"><?= htmlspecialchars($project['number'], ENT_QUOTES, 'UTF-8') ?></span>
-                </div>
-
-                <div class="project-hero__content">
-                    <div class="project-hero__copy">
-                        <p class="eyebrow eyebrow--project">PROJEK PILIHAN</p>
-                        <p class="project-category"><?= htmlspecialchars(strtoupper($project['category']), ENT_QUOTES, 'UTF-8') ?></p>
-                        <h1 id="project-title"><?= htmlspecialchars($project['name'], ENT_QUOTES, 'UTF-8') ?></h1>
-                        <p class="project-full-title"><?= htmlspecialchars($project['full_title'], ENT_QUOTES, 'UTF-8') ?></p>
-                        <p class="project-tagline">“<?= htmlspecialchars($project['tagline'], ENT_QUOTES, 'UTF-8') ?>”</p>
-                        <p class="project-intro"><?= htmlspecialchars($project['short_description'], ENT_QUOTES, 'UTF-8') ?></p>
-
-                        <div class="project-hero__actions">
-                            <a class="button button--primary" href="#process">Lihat Cara Ia Berfungsi</a>
-                            <a class="button button--secondary" href="#impact">Teroka Impaknya</a>
-                        </div>
-
-                        <div class="project-status-pill"><?= htmlspecialchars($project['status'], ENT_QUOTES, 'UTF-8') ?></div>
-                    </div>
-
-                    <div class="project-hero__visual" aria-hidden="true">
-                        <div class="mockup-shell">
-                            <div class="mockup-topbar">
-                                <span></span><span></span><span></span>
-                            </div>
-                            <div class="mockup-body">
-                                <div class="mockup-sidebar">
-                                    <span></span><span></span><span></span>
-                                </div>
-                                <div class="mockup-main">
-                                    <div class="mockup-card mockup-card--large">
-                                        <strong><?= e($project['name']) ?></strong>
-                                        <p><?= e($project['type'] ?: $project['category']) ?></p>
-                                    </div>
-                                    <div class="mockup-card mockup-card--small">
-                                        <span>01</span>
-                                        <p>Masalah</p>
-                                    </div>
-                                    <div class="mockup-card mockup-card--small alt">
-                                        <span>02</span>
-                                        <p>Impak</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="facts-strip" aria-label="Maklumat projek">
-            <div class="container facts-strip__inner">
-                <div><strong>Platform</strong><span><?= htmlspecialchars($project['platform'], ENT_QUOTES, 'UTF-8') ?></span></div>
-                <div><strong>Pengguna</strong><span><?= htmlspecialchars($project['users'], ENT_QUOTES, 'UTF-8') ?></span></div>
-                <div><strong>Lokasi</strong><span><?= htmlspecialchars($project['location'], ENT_QUOTES, 'UTF-8') ?></span></div>
-                <div><strong>Kaedah</strong><span><?= htmlspecialchars($project['method'], ENT_QUOTES, 'UTF-8') ?></span></div>
-                <div><strong>Status</strong><span><?= htmlspecialchars($project['status'], ENT_QUOTES, 'UTF-8') ?></span></div>
-            </div>
-        </section>
-
-        <section class="project-section project-section--problem">
-            <div class="container project-section__inner">
-                <div class="project-section__intro">
-                    <p class="eyebrow eyebrow--project">Masalah</p>
-                    <h2>Masalah yang Perlu Diselesaikan</h2>
-                    <p><?= e($project['problem']) ?></p>
-                </div>
-                <div class="problem-points">
-                    <?php foreach ($project['problem_points'] as $point): ?>
-                        <div class="editorial-block editorial-block--large"><p><?= htmlspecialchars($point, ENT_QUOTES, 'UTF-8') ?></p></div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-
-        <section class="project-section project-section--solution">
-            <div class="container project-section__inner">
-                <div class="project-section__intro">
-                    <p class="eyebrow eyebrow--project">Penyelesaian</p>
-                    <h2>Penyelesaian yang Dibina untuk Keadaan Sebenar</h2>
-                    <p><?= e($project['solution']) ?></p>
-                </div>
-                <div class="solution-grid">
-                    <?php foreach ($project['solution_points'] as $point): ?>
-                        <div class="editorial-block"><p><?= htmlspecialchars($point, ENT_QUOTES, 'UTF-8') ?></p></div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-
-        <section class="project-section project-section--process" id="process">
-            <div class="container project-section__inner">
-                <div class="project-section__intro">
-                    <p class="eyebrow eyebrow--project">Cara ia berfungsi</p>
-                    <h2>Daripada Interaksi kepada Hasil yang Boleh Digunakan</h2>
-                </div>
-                <div class="process-timeline">
-                    <?php foreach ($project['process_steps'] as $index => $step): ?>
-                        <div class="process-step">
-                            <span class="process-step__number">0<?= $index + 1 ?></span>
-                            <h3><?= htmlspecialchars($step['title'], ENT_QUOTES, 'UTF-8') ?></h3>
-                            <p><?= htmlspecialchars($step['text'], ENT_QUOTES, 'UTF-8') ?></p>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-
-        <section class="project-section project-section--features">
-            <div class="container project-section__inner">
-                <div class="project-section__intro">
-                    <p class="eyebrow eyebrow--project">Ciri utama</p>
-                    <h2>Direka untuk Keadaan Sebenar</h2>
-                </div>
-                <div class="features-grid">
-                    <?php foreach ($project['features'] as $index => $feature): ?>
-                        <div class="feature-block <?= $index === 0 || $index === 3 ? 'feature-block--large' : '' ?>">
-                            <p><?= htmlspecialchars($feature, ENT_QUOTES, 'UTF-8') ?></p>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-
-        <section class="project-section project-section--impact" id="impact">
-            <div class="container project-section__inner">
-                <div class="project-section__intro">
-                    <p class="eyebrow eyebrow--project">Impak</p>
-                    <h2>Daripada Projek kepada Impak</h2>
-                    <p><?= e($project['impact']) ?></p>
-                </div>
-                <div class="impact-grid">
-                    <div class="impact-statement">
-                        <p><?= e($project['impact']) ?></p>
-                    </div>
-                    <div class="impact-list">
-                        <?php foreach ($project['impact_points'] as $point): ?>
-                            <div class="editorial-block"><p><?= htmlspecialchars($point, ENT_QUOTES, 'UTF-8') ?></p></div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="project-section project-section--tech">
-            <div class="container project-section__inner">
-                <div class="project-section__intro">
-                    <p class="eyebrow eyebrow--project">Teknologi</p>
-                    <h2>Teknologi di Sebalik <?= e($project['name']) ?></h2>
-                </div>
-                <div class="tech-list">
-                    <?php foreach ($project['technology_stack'] as $item): ?>
-                        <div class="editorial-block"><p><?= htmlspecialchars($item, ENT_QUOTES, 'UTF-8') ?></p></div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-
-        <section class="project-section project-section--team">
-            <div class="container project-section__inner">
-                <div class="project-section__intro">
-                    <p class="eyebrow eyebrow--project">Pasukan</p>
-                    <h2>Dibangunkan dengan Tujuan yang Jelas</h2>
-                </div>
-                <?php if ($project['team']): ?>
-                    <div class="team-card">
-                        <?php foreach ($project['team'] as $person): ?>
-                            <p><strong><?= e($person['full_name']) ?></strong><?= $person['role_title'] ? ' — ' . e($person['role_title']) : '' ?></p>
-                        <?php endforeach; ?>
-                    </div>
-                <?php else: ?>
-                    <div class="team-card team-card--placeholder"><p>Maklumat pasukan belum disahkan untuk penerbitan.</p></div>
-                <?php endif; ?>
-            </div>
-        </section>
-
-        <section class="project-section project-section--journey">
-            <div class="container project-section__inner">
-                <div class="project-section__intro">
-                    <p class="eyebrow eyebrow--project">Perjalanan</p>
-                    <h2>Perjalanan Daripada Idea kepada Prototaip</h2>
-                </div>
-                <div class="timeline-list">
-                    <?php foreach ($project['journey_milestones'] as $milestone): ?>
-                        <div class="timeline-item"><p><?= htmlspecialchars($milestone, ENT_QUOTES, 'UTF-8') ?></p></div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-
-        <?php if ($project['links']): ?>
-            <section class="project-actions" aria-labelledby="project-actions-title">
-                <div class="container project-actions__inner">
-                    <div><p class="eyebrow eyebrow--project">Tindakan Projek</p><h2 id="project-actions-title">Teroka langkah seterusnya.</h2></div>
-                    <div class="project-actions__links">
-                        <?php foreach ($project['links'] as $index => $link): ?>
-                            <a class="button <?= $index === 0 ? 'button--primary' : 'button--secondary' ?>" href="<?= e($link['url']) ?>" target="_blank" rel="noopener noreferrer"><?= e($link['label'] ?: ucwords(str_replace('_', ' ', $link['link_type']))) ?></a>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </section>
-        <?php endif; ?>
-
-        <section class="cta-strip project-cta" aria-labelledby="project-cta-title">
-            <div class="container cta-strip__inner">
-                <div>
-                    <p class="eyebrow eyebrow--small">Setiap rekod membuka ruang</p>
-                    <h2 id="project-cta-title">Setiap Rekod Membuka Ruang untuk Tindakan yang Lebih Baik.</h2>
-                </div>
-                <div class="cta-strip__actions">
-                    <a class="button button--secondary" href="explore.php">Teroka Projek Lain</a>
-                    <a class="button button--primary" href="submit-project.php">Hantar Projek Anda</a>
-                </div>
-            </div>
-        </section>
-
-    <?php elseif ($showComingSoon): ?>
-        <section class="project-not-found" aria-labelledby="coming-soon-title">
-            <div class="container project-not-found__inner">
-                <p class="eyebrow eyebrow--project">Kisah projek sedang disediakan</p>
-                <h1 id="coming-soon-title">Kisah untuk <?= htmlspecialchars($project['name'], ENT_QUOTES, 'UTF-8') ?> sedang dalam penyediaan.</h1>
-                <p>Maklumat penuh projek ini akan dikemaskini sebentar lagi. Sementara itu, anda boleh meneroka projek lain yang sudah tersedia.</p>
-                <a class="button button--primary" href="explore.php">Teroka projek lain</a>
-            </div>
-        </section>
-    <?php else: ?>
-        <section class="project-not-found" aria-labelledby="not-found-title">
-            <div class="container project-not-found__inner">
-                <p class="eyebrow eyebrow--project">Projek tidak dijumpai</p>
-                <h1 id="not-found-title">Kisah projek ini belum tersedia.</h1>
-                <p>Halaman ini sedang disediakan. Kembali ke paparan projek untuk meneroka yang lain.</p>
-                <a class="button button--primary" href="explore.php">Teroka projek lain</a>
-            </div>
-        </section>
-    <?php endif; ?>
-</main>
+<main id="main-content" class="pm-shell"><div class="container">
+ <?php if($visible): ?>
+  <nav class="pm-breadcrumbs"><a href="index.php"><?= e(tr('Utama','Home')) ?></a><span>›</span><a href="explore.php"><?= e(tr('Penyelesaian','Solutions')) ?></a><span>›</span><strong><?= e($project['name']) ?></strong></nav>
+  <section class="detail-hero">
+   <div class="detail-copy"><span class="pm-kicker"><?= e(tr('INOVASI','INNOVATION')) ?></span><h1 class="pm-display"><?= e($project['name']) ?></h1><p class="pm-lead"><?= e($project['tagline']) ?></p><div class="detail-meta"><?php if($programmeSummary): ?><span>♙ <?= e(tr('Program peneraju: ','Lead programme: ').$programmeSummary) ?></span><?php endif; ?><?php if($primaryCollaborator): ?><span>♢ <?= e(tr('Rakan kolaborasi: ','Collaborator: ').$primaryCollaborator) ?></span><?php endif; ?><span><?= e($project['innovation_type']) ?></span><span class="pm-kicker"><?= e($project['status']) ?></span></div><div class="detail-actions"><a class="pm-btn primary" href="#story"><?= e(tr('LIHAT PITCH','VIEW PITCH')) ?> ↗</a><?php if($project['links']): ?><a class="pm-btn" href="<?= e($project['links'][0]['url']) ?>" target="_blank" rel="noopener"><?= e(tr('DEMO LANGSUNG','LIVE DEMO')) ?> ↗</a><?php endif; ?><a class="pm-btn" href="#technology"><?= e(tr('TEKNOLOGI','TECHNOLOGY')) ?> ↓</a></div></div>
+   <div class="detail-hero__visual"><div class="detail-device"><img src="<?= e(project_detail_image($project)) ?>" alt="<?= e(tr('Pratonton projek ','Project preview ').$project['name']) ?>"></div></div>
+  </section>
+  <section class="story-stack" id="story">
+   <article class="story-row pm-card"><div class="story-index"><strong>01</strong><span class="pm-icon"><?= ui_icon('bulb') ?></span></div><div class="story-title"><h2><?= e(tr('Masalah','Problem')) ?></h2><p><?= e($project['problem']) ?></p></div><div class="story-content"><?php foreach(array_slice($project['problem_points'],0,3) as $i=>$point): ?><div><strong><?= ['3×',tr('Lewat','Late'),tr('Terhad','Limited')][$i] ?? '•' ?></strong><span><?= e(pm_text($point)) ?></span></div><?php endforeach; ?></div></article>
+   <article class="story-row pm-card"><div class="story-index"><strong style="background:var(--pm-orange)">02</strong><span class="pm-icon orange"><?= ui_icon('target') ?></span></div><div class="story-title"><h2><?= e(tr('Penyelesaian','Solution')) ?></h2><p><?= e($project['solution']) ?></p></div><div class="story-content"><?php foreach(array_slice($project['solution_points'],0,4) as $point): ?><div><span class="pm-icon orange"><?= ui_icon('shield') ?></span><span><?= e(pm_text($point)) ?></span></div><?php endforeach; ?></div></article>
+   <article class="story-row pm-card"><div class="story-index"><strong>03</strong><span class="pm-icon"><?= ui_icon('code') ?></span></div><div class="story-title"><h2><?= e(tr('Cara Ia Berfungsi','How It Works')) ?></h2></div><div class="story-content journey-line"><?php foreach(array_slice($project['process_steps'],0,5) as $step): ?><span><?= e(pm_text($step)) ?></span><?php endforeach; ?></div></article>
+   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px" class="detail-triptych">
+    <article class="story-row pm-card" style="grid-template-columns:88px 1fr"><div class="story-index"><strong style="background:var(--pm-orange)">04</strong><span class="pm-icon orange"><?= ui_icon('star') ?></span></div><div class="story-title"><h2><?= e(tr('Ciri Utama','Key Features')) ?></h2><ul class="story-list"><?php foreach(array_slice($project['features'],0,6) as $x): ?><li><?= e(pm_text($x)) ?></li><?php endforeach; ?></ul></div></article>
+    <article class="story-row pm-card" style="grid-template-columns:88px 1fr"><div class="story-index"><strong>05</strong><span class="pm-icon"><?= ui_icon('target') ?></span></div><div class="story-title"><h2><?= e(tr('Impak','Impact')) ?></h2><p><?= e($project['impact']) ?></p><ul class="story-list"><?php foreach(array_slice($project['impact_points'],0,4) as $x): ?><li><?= e(pm_text($x)) ?></li><?php endforeach; ?></ul></div></article>
+    <article class="story-row pm-card" id="technology" style="grid-template-columns:88px 1fr"><div class="story-index"><strong style="background:var(--pm-orange)">06</strong><span class="pm-icon orange"><?= ui_icon('code') ?></span></div><div class="story-title"><h2><?= e(tr('Teknologi','Technology')) ?></h2><ul class="pm-tags"><?php foreach(array_slice($project['technology_stack'],0,8) as $x): ?><li><?= e(pm_text($x)) ?></li><?php endforeach; ?></ul></div></article>
+   </div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px" class="detail-duo">
+    <article class="story-row pm-card" style="grid-template-columns:88px 1fr"><div class="story-index"><strong>07</strong><span class="pm-icon"><?= ui_icon('people') ?></span></div><div class="story-title"><h2><?= e(tr('Pasukan & Kolaborasi','Team & Collaboration')) ?></h2><?php if($project['team']): foreach($project['team'] as $person): ?><p><strong><?= e($person['full_name']) ?></strong><br><?= e($person['role_title'] ?: tr('Ahli Pasukan','Team Member')) ?></p><?php endforeach; else: ?><p><?= e(tr('Maklumat ahli pasukan sedang disahkan.','Team member information is being verified.')) ?></p><?php endif; ?><?php foreach($project['collaborators'] as $collaborator): ?><div class="project-collaborator"><span><?= e(tr('Rakan Kolaborasi','Collaborator')) ?></span><strong><?= e($collaborator['name']) ?></strong><p><?= e($collaborator['role_description']) ?></p></div><?php endforeach; ?></div></article>
+    <article class="story-row pm-card" style="grid-template-columns:88px 1fr"><div class="story-index"><strong style="background:var(--pm-orange)">08</strong><span class="pm-icon orange"><?= ui_icon('pin') ?></span></div><div class="story-title"><h2><?= e(tr('Perjalanan Projek','Project Journey')) ?></h2><div class="journey-line"><?php foreach(array_slice($project['journey_milestones'],0,5) as $x): ?><span><?= e(pm_text($x)) ?></span><?php endforeach; ?></div></div></article>
+   </div>
+   <section class="detail-cta pm-card"><div><span class="pm-kicker">09 · <?= e(tr('SERUAN TINDAKAN','CALL TO ACTION')) ?></span><h2><?= e(tr('Mari bina penyelesaian yang lebih bermakna bersama.','Let’s build more meaningful solutions together.')) ?></h2><p><?= e($project['short_description']) ?></p></div><div class="detail-actions"><a class="pm-btn primary" href="about.php#contact"><?= e(tr('HUBUNGI PASUKAN','CONTACT TEAM')) ?> ✉</a><a class="pm-btn" href="explore.php"><?= e(tr('KONGSI','SHARE')) ?> ↗</a></div></section>
+  </section>
+ <?php else: ?><section style="padding:100px 0;text-align:center"><span class="pm-kicker"><?= e(tr('PROJEK','PROJECT')) ?></span><h1 class="pm-display"><?= e(tr('Kisah projek sedang disediakan.','Project story is being prepared.')) ?></h1><p class="pm-lead" style="margin-inline:auto"><?= e(tr('Kembali ke katalog untuk meneroka penyelesaian lain.','Return to the catalogue to explore other solutions.')) ?></p><p><a class="pm-btn primary" href="explore.php"><?= e(tr('Teroka Projek','Explore Projects')) ?></a></p></section><?php endif; ?>
+</div></main>
 <?php require __DIR__ . '/includes/footer.php'; ?>

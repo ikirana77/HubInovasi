@@ -3,18 +3,20 @@
  */
 const navToggle = document.querySelector('.nav-toggle');
 const primaryNav = document.querySelector('.primary-nav');
+const navOpenLabel = document.body.dataset.navOpenLabel || 'Buka menu navigasi';
+const navCloseLabel = document.body.dataset.navCloseLabel || 'Tutup menu navigasi';
 
 if (navToggle && primaryNav) {
     const closeMenu = () => {
         navToggle.setAttribute('aria-expanded', 'false');
-        navToggle.querySelector('.sr-only').textContent = 'Buka menu navigasi';
+        navToggle.querySelector('.sr-only').textContent = navOpenLabel;
         document.body.classList.remove('nav-open');
     };
 
     navToggle.addEventListener('click', () => {
         const isOpen = navToggle.getAttribute('aria-expanded') === 'true';
         navToggle.setAttribute('aria-expanded', String(!isOpen));
-        navToggle.querySelector('.sr-only').textContent = isOpen ? 'Buka menu navigasi' : 'Tutup menu navigasi';
+        navToggle.querySelector('.sr-only').textContent = isOpen ? navOpenLabel : navCloseLabel;
         document.body.classList.toggle('nav-open', !isOpen);
     });
 
@@ -38,27 +40,34 @@ const searchInput = document.getElementById('project-search');
 const filterButtons = Array.from(document.querySelectorAll('.filter-chip'));
 const resultCount = document.getElementById('project-count');
 const emptyState = document.getElementById('empty-state');
+const areaFilter = document.getElementById('area-filter');
+const programmeFilter = document.getElementById('programme-filter');
 
 if (projectGrid && searchInput && filterButtons.length) {
-    let activeCategory = 'Semua';
+    const allCategory = projectGrid.dataset.allCategory || 'Semua';
+    const countTemplate = projectGrid.dataset.countTemplate || '{count} projek dipaparkan';
+    let activeCategory = projectGrid.dataset.initialCategory || allCategory;
 
     const updateResults = () => {
         const query = searchInput.value.trim().toLowerCase();
+        const activeProgramme = programmeFilter ? programmeFilter.value : '';
         let visibleCount = 0;
 
         Array.from(projectGrid.children).forEach((card) => {
             const category = card.getAttribute('data-category') || '';
             const searchableText = (card.getAttribute('data-search') || '').toLowerCase();
-            const matchesCategory = activeCategory === 'Semua' || category === activeCategory;
+            const programmeCodes = (card.getAttribute('data-programmes') || '').split(/\s+/).filter(Boolean);
+            const matchesCategory = activeCategory === allCategory || category === activeCategory;
+            const matchesProgramme = !activeProgramme || programmeCodes.includes(activeProgramme);
             const matchesSearch = !query || searchableText.includes(query);
-            const isVisible = matchesCategory && matchesSearch;
+            const isVisible = matchesCategory && matchesProgramme && matchesSearch;
 
             card.style.display = isVisible ? '' : 'none';
             if (isVisible) visibleCount += 1;
         });
 
         if (resultCount) {
-            resultCount.textContent = `${visibleCount} projek dipaparkan`;
+            resultCount.textContent = countTemplate.replace('{count}', String(visibleCount));
         }
 
         if (emptyState) {
@@ -74,7 +83,7 @@ if (projectGrid && searchInput && filterButtons.length) {
 
     filterButtons.forEach((button) => {
         button.addEventListener('click', () => {
-            activeCategory = button.getAttribute('data-category') || 'Semua';
+            activeCategory = button.getAttribute('data-category') || allCategory;
 
             filterButtons.forEach((chip) => {
                 const isActive = chip === button;
@@ -82,9 +91,25 @@ if (projectGrid && searchInput && filterButtons.length) {
                 chip.setAttribute('aria-pressed', String(isActive));
             });
 
+            if (areaFilter) areaFilter.value = activeCategory;
+
             updateResults();
         });
     });
+
+    if (areaFilter) {
+        areaFilter.addEventListener('change', () => {
+            activeCategory = areaFilter.value || allCategory;
+            filterButtons.forEach((chip) => {
+                const isActive = chip.getAttribute('data-category') === activeCategory;
+                chip.classList.toggle('is-active', isActive);
+                chip.setAttribute('aria-pressed', String(isActive));
+            });
+            updateResults();
+        });
+    }
+
+    if (programmeFilter) programmeFilter.addEventListener('change', updateResults);
 
     searchInput.addEventListener('input', updateResults);
     updateResults();
@@ -165,9 +190,10 @@ if (submissionForm && previewPitchButton) {
 
         const evidenceElement = document.getElementById('preview-evidence');
         if (evidenceElement) {
-            const evidenceStatus = String(formData.get('evidence_status') || 'Belum diuji');
+            const evidenceStatus = String(formData.get('evidence_status') || '').trim();
             const evidence = String(formData.get('evidence') || '').trim();
-            evidenceElement.textContent = `Status bukti: ${evidenceStatus}${evidence ? ` — ${evidence}` : ''}`;
+            const evidencePrefix = submissionForm.dataset.evidencePrefix || 'Status bukti:';
+            evidenceElement.textContent = `${evidencePrefix} ${evidenceStatus}${evidence ? ` — ${evidence}` : ''}`;
         }
 
         if (preview) {
@@ -177,7 +203,7 @@ if (submissionForm && previewPitchButton) {
 
         if (formMessage) {
             formMessage.hidden = false;
-            formMessage.textContent = 'Pratonton dijana daripada borang semasa. Simpan draft untuk menyimpan perubahan ke MySQL.';
+            formMessage.textContent = submissionForm.dataset.previewMessage || 'Pratonton dijana daripada borang semasa.';
             formMessage.className = 'form-message';
         }
     });

@@ -1,0 +1,13 @@
+{
+    "name": "kvks/hubinovasi",
+    "description": "HubInovasi KVKS custom PHP innovation launchpad",
+    "type": "project",
+    "require": {
+        "php": ">=8.0",
+        "google/apiclient": "^2.15"
+    },
+    "config": {
+        "sort-packages": true,
+        "process-timeout": 600
+    }
+}

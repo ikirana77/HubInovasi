@@ -24,6 +24,8 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
+require_once __DIR__ . '/i18n.php';
+
 /** @return PDO */
 function db(): PDO
 {

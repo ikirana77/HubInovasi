@@ -10,7 +10,7 @@ Pemasangan baharu (schema CP05 semasa sudah mengandungi medan development status
 /Applications/MAMP/Library/bin/mysql80/bin/mysql \
   --socket=/Applications/MAMP/tmp/mysql/mysql.sock \
   -uroot -p \
-  -e "SOURCE database/migrations/001_cp05_schema.sql; SOURCE database/seeds/001_cp05_projects.sql; SOURCE database/migrations/003_cp06_admin_review.sql;"
+  -e "SOURCE database/migrations/001_cp05_schema.sql; SOURCE database/seeds/001_cp05_projects.sql; SOURCE database/migrations/003_cp06_admin_review.sql; SOURCE database/migrations/004_cp07_user_accounts.sql; SOURCE database/migrations/006_cp09_taxonomy_programmes.sql; SOURCE database/migrations/007_cp09b_hers_verified_content.sql; SOURCE database/migrations/008_cp09c_durian_radar_verified_content.sql;"
 ```
 
 Naik taraf database CP05 yang sudah berjalan:
@@ -79,3 +79,80 @@ Nota admin diwajibkan untuk `needs_revision` dan `archived`. Publication menggun
 ```
 
 Kedua-dua script menggunakan transaction dan rollback supaya data ujian tidak kekal.
+
+## CP07 — Akaun Pengguna & Pemilikan Projek
+
+Jalankan selepas CP06:
+
+```sh
+/Applications/MAMP/Library/bin/mysql80/bin/mysql \
+  --socket=/Applications/MAMP/tmp/mysql/mysql.sock \
+  -uroot -p \
+  -e "SOURCE database/migrations/004_cp07_user_accounts.sql;"
+```
+
+CP07 menambah:
+
+- akaun `student` dan `lecturer`;
+- status akaun `pending`, `active` dan `suspended`;
+- kelulusan akaun oleh admin;
+- dashboard `My Projects`;
+- hubungan `submissions.owner_user_id`;
+- kawalan supaya pengguna hanya boleh menyunting projek sendiri;
+- nota pembetulan admin pada dashboard pengguna.
+
+Laluan utama:
+
+- `/hubinovasi/register.php`
+- `/hubinovasi/login.php`
+- `/hubinovasi/dashboard/index.php`
+- `/hubinovasi/dashboard/profile.php`
+- `/hubinovasi/admin/users.php`
+
+Aliran CP07:
+
+```text
+Pengguna daftar → pending → admin aktifkan → pengguna login
+→ cipta/simpan draf → hantar semakan → admin minta pembetulan atau terbit
+```
+
+Ujian selepas migration:
+
+```sh
+/Applications/MAMP/bin/php/php8.3.30/bin/php scripts/test_cp07.php
+```
+
+## CP09 — Taksonomi Inovasi & Kolaborasi Tujuh Program
+
+Jalankan selepas CP07/CP08:
+
+```sh
+/Applications/MAMP/Library/bin/mysql80/bin/mysql \
+  --socket=/Applications/MAMP/tmp/mysql/mysql.sock \
+  -uroot -proot \
+  < database/migrations/006_cp09_taxonomy_programmes.sql
+```
+
+CP09 menambah lapan bidang penyelesaian, tujuh program KVKS, jenis inovasi dan hubungan banyak-ke-banyak antara projek dengan program penyumbang.
+
+CP09B mengesahkan HERS sebagai projek KPD dengan BADAR sebagai pemilik masalah dan rakan operasi. Jalankan selepas CP09A:
+
+```sh
+/Applications/MAMP/Library/bin/mysql80/bin/mysql \
+  --socket=/Applications/MAMP/tmp/mysql/mysql.sock \
+  -uroot -proot \
+  < database/migrations/007_cp09b_hers_verified_content.sql
+```
+
+CP09C menerbitkan kandungan Durian Radar yang disahkan daripada laporan projek. Jalankan selepas CP09A:
+
+```sh
+/Applications/MAMP/Library/bin/mysql80/bin/mysql \
+  --socket=/Applications/MAMP/tmp/mysql/mysql.sock \
+  -uroot -proot \
+  < database/migrations/008_cp09c_durian_radar_verified_content.sql
+```
+
+
+## CP07.1 Google Sign-In
+Run `005_cp071_google_signin.sql` after CP07. The migration makes password optional for Google-only users and adds Google identity fields/indexes.

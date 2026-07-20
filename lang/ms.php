@@ -1,0 +1,51 @@
+<?php
+declare(strict_types=1);
+
+return [
+    'meta' => [
+        'description' => 'HubInovasi KVKS — platform pelancaran idea dan inovasi pelajar.',
+    ],
+    'nav' => [
+        'home' => 'Utama',
+        'explore' => 'Teroka',
+        'areas' => 'Bidang',
+        'impact' => 'Pertandingan',
+        'innovators' => 'Inovator',
+        'mentors' => 'Mentor',
+        'about' => 'Tentang',
+        'submit' => 'Hantar Projek',
+        'dashboard' => 'Dashboard Saya',
+        'login' => 'Log Masuk',
+    ],
+    'common' => [
+        'skip' => 'Langkau ke kandungan utama',
+        'open_menu' => 'Buka menu navigasi',
+        'close_menu' => 'Tutup menu navigasi',
+        'main_navigation' => 'Navigasi utama',
+        'language_selection' => 'Pilihan bahasa',
+        'malay' => 'Bahasa Malaysia',
+        'english' => 'English',
+    ],
+    'footer' => [
+        'tagline' => 'Platform inovasi pelajar yang mengubah idea menjadi impak.',
+        'explore' => 'Teroka',
+        'participate' => 'Sertai',
+        'about' => 'Tentang',
+        'connect' => 'Terus Berhubung',
+        'discover' => 'Teroka Penyelesaian',
+        'areas' => 'Bidang Penyelesaian',
+        'trending' => 'Projek Popular',
+        'innovators' => 'Inovator',
+        'submit' => 'Hantar Projek',
+        'competitions' => 'Pertandingan',
+        'events' => 'Acara',
+        'mentors' => 'Mentor',
+        'about_platform' => 'Tentang HubInovasi KVKS',
+        'impact' => 'Impak Kami',
+        'partners' => 'Rakan Strategik',
+        'contact' => 'Hubungi Kami',
+        'rights' => 'Hak cipta terpelihara.',
+        'privacy' => 'Dasar Privasi',
+        'terms' => 'Terma Penggunaan',
+    ],
+];

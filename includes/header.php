@@ -1,52 +1,120 @@
 <?php
+require_once __DIR__ . '/user-auth.php';
 /**
  * Pengepala global HubInovasi.
  * Tetapkan $pageTitle dan $activePage sebelum memanggil fail ini.
  */
-$pageTitle = $pageTitle ?? 'Utama';
+$pageTitle = $pageTitle ?? tr('Utama', 'Home');
 $activePage = $activePage ?? '';
-$navigation = [
-    'home' => ['label' => 'Utama', 'url' => 'index.php'],
-    'explore' => ['label' => 'Teroka', 'url' => 'explore.php'],
-    'areas' => ['label' => 'Bidang', 'url' => 'solution-areas.php'],
-    'impact' => ['label' => 'Pertandingan & Impak', 'url' => 'competitions-impact.php'],
-    'about' => ['label' => 'Tentang Kami', 'url' => 'about.php'],
-    'submit' => ['label' => 'Hantar Projek', 'url' => 'submit-project.php'],
-];
+$homeLaunchpad = $homeLaunchpad ?? false;
+$publicMockup = $publicMockup ?? false;
+$bodyClass = trim((string) ($bodyClass ?? ''));
+$extraStylesheets = is_array($extraStylesheets ?? null) ? $extraStylesheets : [];
+
+$navigation = [];
+
+if ($publicMockup) {
+    $navigation = [
+        'home' => ['label' => t('nav.home'), 'url' => 'index.php'],
+        'explore' => ['label' => t('nav.explore'), 'url' => 'explore.php'],
+        'areas' => ['label' => t('nav.areas'), 'url' => 'solution-areas.php'],
+        'impact' => ['label' => t('nav.impact'), 'url' => 'competitions-impact.php'],
+        'innovators' => ['label' => t('nav.innovators'), 'url' => 'innovator.php'],
+        'mentors' => ['label' => t('nav.mentors'), 'url' => 'mentor.php'],
+        'about' => ['label' => t('nav.about'), 'url' => 'about.php'],
+        'submit' => ['label' => t('nav.submit'), 'url' => 'submit-project.php'],
+    ];
+} elseif ($homeLaunchpad) {
+    $navigation = [
+        'explore' => ['label' => t('nav.explore'), 'url' => 'explore.php'],
+        'areas' => ['label' => t('nav.areas'), 'url' => 'solution-areas.php'],
+        'impact' => ['label' => t('nav.impact'), 'url' => 'competitions-impact.php'],
+    ];
+    unset($navigation['home']);
+    $navigation += [
+        'innovators' => ['label' => t('nav.innovators'), 'url' => 'innovator.php'],
+        'mentors' => ['label' => t('nav.mentors'), 'url' => 'mentor.php'],
+        'about' => ['label' => t('nav.about'), 'url' => 'about.php'],
+        'submit' => ['label' => t('nav.submit'), 'url' => 'submit-project.php'],
+    ];
+} else {
+    $navigation = [
+        'home' => ['label' => t('nav.home'), 'url' => 'index.php'],
+        'explore' => ['label' => t('nav.explore'), 'url' => 'explore.php'],
+        'areas' => ['label' => t('nav.areas'), 'url' => 'solution-areas.php'],
+        'impact' => ['label' => t('nav.impact'), 'url' => 'competitions-impact.php'],
+    ];
+    $navigation += [
+        'about' => ['label' => t('nav.about'), 'url' => 'about.php'],
+        'submit' => ['label' => t('nav.submit'), 'url' => 'submit-project.php'],
+    ];
+    if (user_is_authenticated()) {
+        $navigation['dashboard'] = ['label' => t('nav.dashboard'), 'url' => 'dashboard/index.php'];
+    } else {
+        $navigation['login'] = ['label' => t('nav.login'), 'url' => 'login.php'];
+    }
+}
 ?>
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="<?= e(app_language()) ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="HubInovasi KVKS — platform pelancaran idea dan inovasi pelajar.">
-    <meta name="theme-color" content="#faf7f2">
-    <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?> | HubInovasi KVKS</title>
+    <meta name="description" content="<?= e(t('meta.description')) ?>">
+    <meta name="theme-color" content="#fffdf9">
+    <title><?= e($pageTitle) ?> | HubInovasi KVKS</title>
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/branding/favicon-64.png">
     <link rel="stylesheet" href="assets/css/style.css">
+    <?php foreach ($extraStylesheets as $stylesheet): ?>
+        <link rel="stylesheet" href="<?= e((string) $stylesheet) ?>">
+    <?php endforeach; ?>
+    <link rel="stylesheet" href="assets/css/branding.css">
     <script src="assets/js/main.js" defer></script>
 </head>
-<body>
-    <a class="skip-link" href="#main-content">Langkau ke kandungan utama</a>
-    <header class="site-header">
+<body<?= $bodyClass !== '' ? ' class="' . e($bodyClass) . '"' : '' ?>
+      data-nav-open-label="<?= e(t('common.open_menu')) ?>"
+      data-nav-close-label="<?= e(t('common.close_menu')) ?>">
+    <a class="skip-link" href="#main-content"><?= e(t('common.skip')) ?></a>
+    <header class="site-header<?= ($homeLaunchpad || $publicMockup) ? ' site-header--launchpad' : '' ?><?= $publicMockup ? ' site-header--public-mockup' : '' ?>">
         <div class="container site-header__inner">
-            <a class="brand" href="index.php" aria-label="HubInovasi KVKS — halaman utama">
-                <span class="brand__mark" aria-hidden="true">H<span>+</span></span>
-                <span class="brand__name">Hub<span>Inovasi</span><small>KVKS</small></span>
+            <a class="brand brand--image" href="index.php" aria-label="HubInovasi KVKS — <?= e(tr('halaman utama', 'home page')) ?>">
+                <picture>
+                    <source media="(max-width: 640px)" srcset="assets/images/branding/hubinovasi-symbol.png">
+                    <img class="brand__logo" src="assets/images/branding/hubinovasi-kvks-primary.png" alt="HubInovasi KVKS — <?= e(tr('Platform Inovasi Pelajar', 'Student Innovation Platform')) ?>">
+                </picture>
             </a>
 
             <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation">
-                <span class="sr-only">Buka menu navigasi</span>
+                <span class="sr-only"><?= e(t('common.open_menu')) ?></span>
                 <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
             </button>
 
-            <nav class="primary-nav" id="primary-navigation" aria-label="Navigasi utama">
+            <nav class="primary-nav" id="primary-navigation" aria-label="<?= e(t('common.main_navigation')) ?>">
                 <ul>
                     <?php foreach ($navigation as $key => $item): ?>
+                        <?php if ($key === 'submit'): ?>
+                            <?php if ($publicMockup): ?><li class="nav-search-item"><a href="explore.php" aria-label="<?= e(tr('Cari projek', 'Search projects')) ?>">⌕</a></li><?php endif; ?>
+                            <li class="language-switcher-item">
+                                <div class="language-switcher" role="group" aria-label="<?= e(t('common.language_selection')) ?>">
+                                    <a class="language-switcher__option<?= app_language() === 'ms' ? ' is-active' : '' ?>"
+                                       href="<?= e(language_switch_url('ms')) ?>"
+                                       lang="ms" hreflang="ms"
+                                       <?= app_language() === 'ms' ? 'aria-current="true"' : '' ?>
+                                       title="<?= e(t('common.malay')) ?>">BM</a>
+                                    <span aria-hidden="true">/</span>
+                                    <a class="language-switcher__option<?= app_language() === 'en' ? ' is-active' : '' ?>"
+                                       href="<?= e(language_switch_url('en')) ?>"
+                                       lang="en" hreflang="en"
+                                       <?= app_language() === 'en' ? 'aria-current="true"' : '' ?>
+                                       title="<?= e(t('common.english')) ?>">EN</a>
+                                </div>
+                            </li>
+                        <?php endif; ?>
                         <li>
-                            <a href="<?= htmlspecialchars($item['url'], ENT_QUOTES, 'UTF-8') ?>"
+                            <a href="<?= e($item['url']) ?>"
                                <?= $activePage === $key ? 'aria-current="page"' : '' ?>
                                class="<?= $key === 'submit' ? 'nav-cta' : '' ?>">
-                                <?= htmlspecialchars($item['label'], ENT_QUOTES, 'UTF-8') ?>
+                                <?= e($item['label']) ?>
                             </a>
                         </li>
                     <?php endforeach; ?>

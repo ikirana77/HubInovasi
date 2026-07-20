@@ -5,3 +5,5 @@ config/local.php
 uploads/projects/*/*/*
 !uploads/projects/**/.gitkeep
 !uploads/projects/.htaccess
+
+/vendor/

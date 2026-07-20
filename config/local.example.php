@@ -9,4 +9,8 @@ return [
         'username' => 'your_database_user',
         'password' => 'your_database_password',
     ],
+    'google' => [
+        'client_id' => 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
+        'login_uri' => '', // Blank = derive automatically from current host.
+    ],
 ];

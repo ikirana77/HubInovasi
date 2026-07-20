@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
+require_once __DIR__ . '/taxonomy.php';
 
 const SUBMISSION_FIELDS = [
-    'submitter_name', 'submitter_email', 'project_name', 'institution', 'solution_area', 'project_development_status', 'tagline',
+    'submitter_name', 'submitter_email', 'project_name', 'institution', 'solution_area', 'innovation_type', 'programme_codes', 'project_development_status', 'tagline',
     'problem', 'solution', 'how_it_works', 'key_features', 'impact', 'evidence_status',
     'evidence_summary', 'technologies', 'team_details', 'project_journey', 'call_to_action',
 ];
@@ -12,7 +13,7 @@ function submission_payload(array $source): array
 {
     $map = [
         'submitter_name' => 'name', 'submitter_email' => 'email', 'project_name' => 'project_name',
-        'institution' => 'institution', 'solution_area' => 'category', 'project_development_status' => 'development_status', 'tagline' => 'tagline',
+        'institution' => 'institution', 'solution_area' => 'category', 'innovation_type' => 'innovation_type', 'project_development_status' => 'development_status', 'tagline' => 'tagline',
         'problem' => 'problem', 'solution' => 'solution', 'how_it_works' => 'how_it_works',
         'key_features' => 'features', 'impact' => 'impact', 'evidence_status' => 'evidence_status',
         'evidence_summary' => 'evidence', 'technologies' => 'technologies', 'team_details' => 'team',
@@ -23,6 +24,13 @@ function submission_payload(array $source): array
         $value = trim((string) ($source[$field] ?? ''));
         $payload[$column] = $value !== '' ? $value : null;
     }
+    $leadProgramme = strtoupper(trim((string) ($source['lead_programme'] ?? '')));
+    $programmes = $source['programmes'] ?? [];
+    if (!is_array($programmes)) $programmes = [$programmes];
+    if ($leadProgramme !== '') array_unshift($programmes, $leadProgramme);
+    $payload['programme_codes'] = json_encode(valid_programme_codes($programmes), JSON_UNESCAPED_UNICODE);
+    $payload['solution_area'] = solution_area_slug($payload['solution_area']);
+    if (!isset(hub_innovation_types()[(string) $payload['innovation_type']])) $payload['innovation_type'] = null;
     return $payload;
 }
 
@@ -34,7 +42,7 @@ function find_submission_by_token(string $token): ?array
     return $stmt->fetch() ?: null;
 }
 
-function save_submission(array $payload, ?string $token, string $status): array
+function save_submission(array $payload, ?string $token, string $status, ?int $ownerUserId = null): array
 {
     $allowed = ['draft', 'pending_review'];
     if (!in_array($status, $allowed, true)) {
@@ -52,13 +60,16 @@ function save_submission(array $payload, ?string $token, string $status): array
     if ($existing && $existing['status'] === 'needs_revision' && $status !== 'pending_review') {
         throw new RuntimeException('Submission pembetulan mesti dihantar semula untuk semakan.');
     }
+    if ($existing && !empty($existing['owner_user_id']) && (int) $existing['owner_user_id'] !== (int) $ownerUserId) {
+        throw new RuntimeException('Anda tidak mempunyai akses kepada submission ini.');
+    }
 
     if (!$existing) {
         $token = bin2hex(random_bytes(32));
         $columns = implode(', ', SUBMISSION_FIELDS);
         $placeholders = implode(', ', array_fill(0, count(SUBMISSION_FIELDS), '?'));
-        $stmt = db()->prepare("INSERT INTO submissions (public_token, {$columns}, status, submitted_at) VALUES (?, {$placeholders}, ?, ?)");
-        $values = [$token];
+        $stmt = db()->prepare("INSERT INTO submissions (public_token, owner_user_id, {$columns}, status, submitted_at) VALUES (?, ?, {$placeholders}, ?, ?)");
+        $values = [$token, $ownerUserId];
         foreach (SUBMISSION_FIELDS as $field) $values[] = $payload[$field] ?? null;
         $values[] = $status;
         $values[] = $status === 'pending_review' ? date('Y-m-d H:i:s') : null;
@@ -76,11 +87,40 @@ function save_submission(array $payload, ?string $token, string $status): array
     return find_submission_by_token((string) $token) ?? [];
 }
 
+
+function find_submission_for_owner(string $token, int $ownerUserId): ?array
+{
+    if (!preg_match('/^[a-f0-9]{64}$/', $token) || $ownerUserId < 1) return null;
+    $stmt = db()->prepare('SELECT * FROM submissions WHERE public_token = ? AND owner_user_id = ? LIMIT 1');
+    $stmt->execute([$token, $ownerUserId]);
+    return $stmt->fetch() ?: null;
+}
+
+function user_submission_summary_counts(int $ownerUserId): array
+{
+    $counts = ['all' => 0, 'draft' => 0, 'pending_review' => 0, 'needs_revision' => 0, 'published' => 0, 'archived' => 0];
+    $stmt = db()->prepare('SELECT status, COUNT(*) total FROM submissions WHERE owner_user_id = ? GROUP BY status');
+    $stmt->execute([$ownerUserId]);
+    foreach ($stmt->fetchAll() as $row) {
+        $counts[$row['status']] = (int) $row['total'];
+        $counts['all'] += (int) $row['total'];
+    }
+    return $counts;
+}
+
+function user_submissions(int $ownerUserId): array
+{
+    $stmt = db()->prepare('SELECT s.id,s.public_token,s.project_name,s.tagline,s.status,s.admin_notes,s.submitted_at,s.updated_at,p.slug linked_project_slug FROM submissions s LEFT JOIN projects p ON p.id=s.linked_project_id WHERE s.owner_user_id=? ORDER BY s.updated_at DESC');
+    $stmt->execute([$ownerUserId]);
+    return $stmt->fetchAll();
+}
+
 function submission_is_complete(array $payload): bool
 {
-    foreach (['submitter_name','submitter_email','project_name','solution_area','project_development_status','tagline','problem','solution','how_it_works','impact','call_to_action'] as $field) {
+    foreach (['submitter_name','submitter_email','project_name','solution_area','innovation_type','programme_codes','project_development_status','tagline','problem','solution','how_it_works','impact','call_to_action'] as $field) {
         if (empty($payload[$field])) return false;
     }
+    if (!decode_programme_codes($payload['programme_codes'])) return false;
     return filter_var($payload['submitter_email'], FILTER_VALIDATE_EMAIL) !== false;
 }
 
@@ -153,7 +193,7 @@ function search_submissions(string $status = '', string $query = '', int $page =
 function find_submission_by_id(int $id): ?array
 {
     if ($id < 1) return null;
-    $stmt = db()->prepare('SELECT s.*, p.slug linked_project_slug, p.name linked_project_name FROM submissions s LEFT JOIN projects p ON p.id=s.linked_project_id WHERE s.id=? LIMIT 1');
+    $stmt = db()->prepare('SELECT s.*, p.slug linked_project_slug, p.name linked_project_name, u.role owner_role, u.account_status owner_account_status FROM submissions s LEFT JOIN projects p ON p.id=s.linked_project_id LEFT JOIN users u ON u.id=s.owner_user_id WHERE s.id=? LIMIT 1');
     $stmt->execute([$id]);
     return $stmt->fetch() ?: null;
 }
@@ -202,14 +242,18 @@ function publish_submission_as_project(PDO $pdo, array $submission): int
     $journey = text_lines($submission['project_journey']);
 
     if ($projectId) {
-        $stmt = $pdo->prepare("UPDATE projects SET name=?, full_title=?, category=?, solution_area=?, tagline=?, development_status=?, verification_status='verified', review_status='published', problem=?, solution=?, how_it_works=?, key_features=?, impact=?, technology_stack=?, technology_details=?, project_journey=?, published_at=CURRENT_TIMESTAMP WHERE id=?");
-        $stmt->execute([$submission['project_name'],$submission['project_name'],$submission['solution_area'],$submission['solution_area'],$submission['tagline'],$submission['project_development_status'],$submission['problem'],$submission['solution'],json_encode($process),json_encode($features),$submission['impact'],json_encode($technologies),json_encode($technologies),json_encode($journey),$projectId]);
+        $stmt = $pdo->prepare("UPDATE projects SET name=?, full_title=?, category=?, solution_area=?, innovation_type=?, tagline=?, development_status=?, verification_status='verified', review_status='published', problem=?, solution=?, how_it_works=?, key_features=?, impact=?, technology_stack=?, technology_details=?, project_journey=?, published_at=CURRENT_TIMESTAMP WHERE id=?");
+        $stmt->execute([$submission['project_name'],$submission['project_name'],$submission['innovation_type'],$submission['solution_area'],$submission['innovation_type'],$submission['tagline'],$submission['project_development_status'],$submission['problem'],$submission['solution'],json_encode($process),json_encode($features),$submission['impact'],json_encode($technologies),json_encode($technologies),json_encode($journey),$projectId]);
     } else {
         $order = (int) $pdo->query('SELECT COALESCE(MAX(display_order), 0) + 1 FROM projects')->fetchColumn();
-        $stmt = $pdo->prepare("INSERT INTO projects (slug,name,full_title,category,solution_area,tagline,development_status,verification_status,review_status,display_order,problem,solution,how_it_works,key_features,impact,technology_stack,technology_details,project_journey,published_at) VALUES (?,?,?,?,?,?,?,'verified','published',?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)");
-        $stmt->execute([$slug,$submission['project_name'],$submission['project_name'],$submission['solution_area'],$submission['solution_area'],$submission['tagline'],$submission['project_development_status'],$order,$submission['problem'],$submission['solution'],json_encode($process),json_encode($features),$submission['impact'],json_encode($technologies),json_encode($technologies),json_encode($journey)]);
+        $stmt = $pdo->prepare("INSERT INTO projects (slug,name,full_title,category,solution_area,innovation_type,tagline,development_status,verification_status,review_status,display_order,problem,solution,how_it_works,key_features,impact,technology_stack,technology_details,project_journey,published_at) VALUES (?,?,?,?,?,?,?,?,'verified','published',?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)");
+        $stmt->execute([$slug,$submission['project_name'],$submission['project_name'],$submission['innovation_type'],$submission['solution_area'],$submission['innovation_type'],$submission['tagline'],$submission['project_development_status'],$order,$submission['problem'],$submission['solution'],json_encode($process),json_encode($features),$submission['impact'],json_encode($technologies),json_encode($technologies),json_encode($journey)]);
         $projectId = (int) $pdo->lastInsertId();
     }
+    $programmeCodes = decode_programme_codes($submission['programme_codes'] ?? null);
+    $pdo->prepare('DELETE FROM project_programmes WHERE project_id=?')->execute([$projectId]);
+    $programmeInsert = $pdo->prepare('INSERT INTO project_programmes (project_id,programme_code,contribution_type) VALUES (?,?,?)');
+    foreach ($programmeCodes as $index => $code) $programmeInsert->execute([$projectId,$code,$index === 0 ? 'lead' : 'contributor']);
     return $projectId;
 }
 

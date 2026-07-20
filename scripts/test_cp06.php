@@ -36,7 +36,7 @@ try {
     $payload = array_fill_keys(SUBMISSION_FIELDS, null);
     $payload = array_merge($payload, [
         'submitter_name'=>'CP06 Submitter','submitter_email'=>'submitter@example.test','project_name'=>'CP06 Review Test',
-        'institution'=>'KVKS','solution_area'=>'Kehidupan Kampus','project_development_status'=>'Functional Prototype',
+        'institution'=>'KVKS','solution_area'=>'smart-campus-safety-operations','innovation_type'=>'digital-solution','programme_codes'=>json_encode(['KPD']),'project_development_status'=>'Functional Prototype',
         'tagline'=>'Submission lengkap untuk ujian terkawal.','problem'=>'Masalah sebenar diterangkan dengan konteks yang mencukupi.',
         'solution'=>'Penyelesaian menerangkan manfaat dan cara menangani masalah.','how_it_works'=>"Pengguna membuka aplikasi\nSistem memproses input",
         'key_features'=>"Ciri satu\nCiri dua",'impact'=>'Impak yang dijangka diterangkan tanpa statistik rekaan.',

@@ -7,7 +7,7 @@ INSERT INTO projects (
     how_it_works, key_features, impact, impact_points, technology_stack, technology_details, project_journey, published_at
 ) VALUES (
     'hers', 'HERS', 'HERS — Sistem Rekod Kehadiran Muslimah ke Tingkat Atas Surau',
-    'Aplikasi Mudah Alih', 'Kehidupan Kampus', 'Sistem Pengurusan Kehadiran Berasaskan Kod QR',
+    'Aplikasi Mudah Alih', 'smart-campus-safety-operations', 'Sistem Pengurusan Kehadiran Berasaskan Kod QR',
     'Kehadiran yang lebih pantas, teratur dan bermakna.',
     'Sistem kehadiran berasaskan kod QR yang membantu merekod pergerakan pelajar Muslimah ke tingkat atas Pusat Islam Raudhatul Jannah dengan aliran yang pantas, mudah dan tersusun.',
     'Functional Pilot / Release Candidate', 'verified', 'published', 1, 1, 'project-card--peach',
@@ -31,11 +31,11 @@ INSERT INTO projects (
     JSON_ARRAY('Kenal pasti masalah operasi sebenar','Reka bentuk aliran imbasan tanpa kelewatan','Bangunkan sistem log masuk dan peranan pengguna','Bangunkan kawalan sesi harian','Uji enjin imbasan QR','Uji perlindungan rekod pendua','Uji pada peranti fizikal','Bangunkan modul analitik warden'),
     CURRENT_TIMESTAMP
 ),
-('spark','SPARK','SPARK','Aplikasi Mudah Alih','Kehidupan Kampus','Sistem Pengurusan Asrama','Pengurusan keluar masuk asrama yang lebih selamat dan tersusun.',NULL,'Functional Prototype / Active Development','incomplete','draft',0,2,'project-card--mint',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
-('durian-radar','Durian Radar','Durian Radar','Komuniti','Komuniti & Kesejahteraan',NULL,'Menemukan durian segar melalui peta komuniti masa nyata.',NULL,'Functional Prototype','incomplete','draft',0,3,'project-card--sky',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
-('cms-quest','CMS Quest','CMS Quest','Pendidikan','Pembelajaran Masa Hadapan',NULL,'Pembelajaran pengurusan kandungan web melalui simulasi gamifikasi.',NULL,'Concept and Design Stage','incomplete','draft',0,4,'project-card--lilac',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
-('careline-kvks','Careline KVKS','Careline KVKS','Sistem Web','Kehidupan Kampus','Sistem Institusi','Saluran aduan digital yang lebih jelas, pantas dan terurus.',NULL,'Institutional System / Pilot Implementation','incomplete','draft',0,5,'project-card--coral',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
-('visionlab','VisionLab','VisionLab','Kecerdasan Buatan','Pembelajaran Masa Hadapan',NULL,NULL,NULL,'Unverified','unverified','archived',0,6,'project-card--cream',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)
+('spark','SPARK','SPARK','Aplikasi Mudah Alih','smart-campus-safety-operations','Sistem Pengurusan Asrama','Pengurusan keluar masuk asrama yang lebih selamat dan tersusun.',NULL,'Functional Prototype / Active Development','incomplete','draft',0,2,'project-card--mint',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+('durian-radar','Durian Radar','Durian Radar','Komuniti','sustainability-circular-economy',NULL,'Menemukan durian segar melalui peta komuniti masa nyata.',NULL,'Functional Prototype','incomplete','draft',0,3,'project-card--sky',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+('cms-quest','CMS Quest','CMS Quest','Pendidikan','community-education-wellbeing',NULL,'Pembelajaran pengurusan kandungan web melalui simulasi gamifikasi.',NULL,'Concept and Design Stage','incomplete','draft',0,4,'project-card--lilac',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+('careline-kvks','Careline KVKS','Careline KVKS','Sistem Web','smart-campus-safety-operations','Sistem Institusi','Saluran aduan digital yang lebih jelas, pantas dan terurus.',NULL,'Institutional System / Pilot Implementation','incomplete','draft',0,5,'project-card--coral',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+('visionlab','VisionLab','VisionLab','Kecerdasan Buatan','digital-systems-intelligence',NULL,NULL,NULL,'Unverified','unverified','archived',0,6,'project-card--cream',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)
 ON DUPLICATE KEY UPDATE
     name = VALUES(name), full_title = VALUES(full_title), category = VALUES(category), solution_area = VALUES(solution_area),
     project_type = VALUES(project_type), tagline = VALUES(tagline), short_description = VALUES(short_description),

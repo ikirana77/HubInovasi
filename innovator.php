@@ -1,34 +1,14 @@
 <?php
-/**
- * Profil Inovator — rangka profil awam tanpa data peribadi rekaan.
- */
-$pageTitle = 'Profil Inovator';
-$activePage = '';
-require __DIR__ . '/includes/header.php';
+require_once __DIR__.'/includes/bootstrap.php';require_once __DIR__.'/includes/public-ui.php';
+$pageTitle=tr('Profil Inovator','Innovator Profile');$activePage='innovators';enable_public_mockup('mockup-innovator');
+$featured=[['hers','HERS',tr('Sistem sokongan pendidikan dan rekod yang dibina untuk keperluan sebenar.','Education support and recording system built for real needs.')],['durian-radar','Durian Radar',tr('Cerapan tanaman dan komuniti berasaskan data.','Data-driven crop and community insight.')],['spark','SPARK',tr('Penyelesaian pintar untuk pengalaman kampus yang lancar.','Smart solution for a seamless campus experience.')]];
+require __DIR__.'/includes/header.php';
 ?>
-<main id="main-content" class="inner-page profile-page">
-    <section class="profile-hero">
-        <div class="container profile-hero__inner">
-            <div class="profile-hero__mark" aria-hidden="true">I+</div>
-            <div>
-                <p class="eyebrow">Profil Inovator</p>
-                <h1>Pelajar sebagai pembina,<br><span>pencipta dan penyelesai masalah.</span></h1>
-                <p>Profil inovator individu akan diterbitkan selepas nama, peranan, kemahiran dan pencapaian disahkan.</p>
-            </div>
-        </div>
-    </section>
-    <section class="profile-blueprint" aria-labelledby="innovator-blueprint-title">
-        <div class="container">
-            <div class="section-heading section-heading--compact">
-                <p class="eyebrow">Kandungan Profil</p>
-                <h2 id="innovator-blueprint-title">Setiap profil akan menghubungkan individu dengan hasil kerja sebenar.</h2>
-            </div>
-            <div class="profile-fields">
-                <article><h3>Peranan &amp; Kemahiran</h3><p>Sumbangan khusus dalam pembangunan, reka bentuk atau penyelidikan.</p></article>
-                <article><h3>Projek</h3><p>Produk dan penyelesaian yang dibina bersama pasukan.</p></article>
-                <article><h3>Pencapaian</h3><p>Pengiktirafan dan sijil yang telah disahkan.</p></article>
-            </div>
-        </div>
-    </section>
-</main>
-<?php require __DIR__ . '/includes/footer.php'; ?>
+<main id="main-content" class="pm-shell"><div class="container">
+ <nav class="pm-breadcrumbs"><a href="index.php"><?= e(tr('Utama','Home')) ?></a><span>›</span><a href="innovator.php"><strong><?= e(tr('Inovator','Innovators')) ?></strong></a><span>›</span><span>Aiman Haziq</span></nav>
+ <section class="profile-top"><div class="profile-portrait"><img src="assets/images/home/innovator-aiman.webp" alt="Aiman Haziq"></div><div class="profile-copy"><span class="pm-kicker"><?= e(tr('INOVATOR','INNOVATOR')) ?></span><h1>Aiman Haziq</h1><p><strong class="profile-role"><?= e(tr('Ketua Projek','Project Leader')) ?></strong> · <?= e(tr('Diploma Teknologi Maklumat','Diploma in Information Technology')) ?></p><blockquote class="profile-quote"><?= e(tr('Saya suka mengubah idea menjadi penyelesaian yang menjadikan kehidupan lebih baik untuk manusia sebenar.','I love turning ideas into solutions that make life better for real people.')) ?></blockquote><div class="detail-meta"><span>♢ Diploma IT</span><span>▣ <?= e(tr('Tahun 2','Year 2')) ?></span><span>⌖ KVKS</span><span>♙ Team Alpha</span></div></div><aside><div class="profile-facts"><?php foreach([['rocket','5',tr('Projek','Projects')],['award','3',tr('Anugerah','Awards')],['people','2',tr('Pertandingan','Competitions')],['chart','1.2K+',tr('Paparan Profil','Profile Views')]] as $x): ?><div class="pm-card"><span class="pm-icon" style="margin:auto;width:38px;height:38px"><?= ui_icon($x[0]) ?></span><strong><?= e($x[1]) ?></strong><span><?= e($x[2]) ?></span></div><?php endforeach; ?></div><div class="connect-card pm-card"><div><h2><?= e(tr('Mari berhubung','Let’s connect')) ?></h2><p><?= e(tr('Terbuka untuk kolaborasi, pertandingan dan membina penyelesaian bermakna.','Open to collaboration, competitions and building meaningful solutions.')) ?></p></div><a class="pm-btn primary" href="about.php#contact"><?= e(tr('MESEJ','MESSAGE')) ?> ↗</a></div></aside></section>
+ <section class="skill-row"><div class="skill-box"><h2><?= e(tr('KEMAHIRAN','SKILLS')) ?></h2><div class="skill-chips"><?php foreach(['Problem Solving','UI/UX Design','Flutter','Laravel','Firebase','Team Leadership','Python','IoT','Database Design','Agile','Public Speaking'] as $x): ?><span><?= e($x) ?></span><?php endforeach; ?></div></div><div class="skill-box"><h2><?= e(tr('TEKNOLOGI YANG DIGUNAKAN','TECHNOLOGIES I WORK WITH')) ?></h2><div class="skill-chips"><?php foreach(['Flutter','Laravel','Firebase','MySQL','Python','JavaScript','Figma'] as $x): ?><span><?= e($x) ?></span><?php endforeach; ?></div></div></section>
+ <section class="profile-content"><div class="project-showcase pm-card"><div class="pm-section-title"><h2><?= e(tr('PROJEK PILIHAN','FEATURED PROJECTS')) ?></h2><a href="explore.php"><?= e(tr('Lihat semua projek','View all projects')) ?> →</a></div><div class="mini-projects"><?php foreach($featured as $p): ?><article class="mini-project pm-card"><img src="<?= e(project_image($p[0])) ?>" alt="<?= e($p[1]) ?>"><div><h3><?= e($p[1]) ?></h3><p><?= e($p[2]) ?></p><ul class="pm-tags"><li>Innovation</li><li>KVKS</li></ul></div></article><?php endforeach; ?></div></div><aside class="achievement-list pm-card"><div class="pm-section-title"><h2><?= e(tr('PENCAPAIAN','ACHIEVEMENTS')) ?></h2></div><ul><?php foreach([[tr('Anugerah Inovasi Terbaik','Best Innovation Award'),'Innovation Fest 2026','Sep 2026'],[tr('5 Finalis Terbaik','Top 5 Finalist'),'TVET Innovation Challenge','Oct 2026'],[tr('Anugerah Dekan','Dean’s Award'),tr('Kecemerlangan Akademik','Academic Excellence'),'May 2025'],[tr('Sijil Penyertaan','Certificate of Participation'),'ASEAN Youth Innovation Summit','Nov 2025']] as $x): ?><li><span class="pm-icon" style="width:34px;height:34px"><?= ui_icon('award') ?></span><div><strong><?= e($x[0]) ?></strong><br><?= e($x[1]) ?></div><time><?= e($x[2]) ?></time></li><?php endforeach; ?></ul></aside></section>
+ <section class="profile-mantra pm-card"><div><h2>“<?= e(tr('Inovasi bukan hanya tentang teknologi, tetapi tentang manusia, tujuan dan impak.','Innovation is not just about technology, it’s about people, purpose and impact.')) ?>”</h2></div><?php foreach([['heart',tr('Utamakan Manusia','People First')],['bulb',tr('Terus Belajar','Keep Learning')],['rocket',tr('Ambil Tindakan','Take Action')],['people',tr('Lebih Kuat Bersama','Stronger Together')]] as $x): ?><div><span class="pm-icon"><?= ui_icon($x[0]) ?></span><strong><?= e($x[1]) ?></strong><p><?= e(tr('Idea menjadi impak melalui tindakan.','Ideas become impact through action.')) ?></p></div><?php endforeach; ?></section>
+</div></main>
+<?php require __DIR__.'/includes/footer.php'; ?>
