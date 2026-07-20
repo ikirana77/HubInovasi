@@ -67,6 +67,32 @@ $innovators = [
     ['name' => 'Muhammad Aidil Wafiy', 'role' => tr('UI/UX Designer & Student Developer', 'UI/UX Designer & Student Developer'), 'project' => 'SPARK', 'bio' => tr('Membangunkan pengalaman aplikasi SPARK melalui reka bentuk antaramuka, sistem data dan pembangunan aplikasi.', 'Developing the SPARK app experience through interface design, data systems and application development.'), 'image' => 'innovator-aidil-wafiy.webp'],
     ['name' => 'Anniq Darwisy', 'role' => tr('Student Developer & Website Designer', 'Student Developer & Website Designer'), 'project' => 'SPARK', 'bio' => tr('Menyumbang kepada reka bentuk website, fungsi sistem dan kerjasama pasukan SPARK.', 'Contributes to website design, system functions and SPARK team collaboration.'), 'image' => 'innovator-anniq-darwisy.webp'],
     ['name' => 'Khadijah Hanum', 'role' => tr('Multi-Project Innovator', 'Multi-Project Innovator'), 'project' => 'e-Competency KVKS · Durian Radar · HERS', 'bio' => tr('Menyumbang kepada pembangunan sistem, data dan aplikasi merentas beberapa projek inovasi.', 'Contributes to system, data and application development across several innovation projects.'), 'image' => 'innovator-khadijah-hanum.webp'],
+    [
+        'name' => 'Nazlah Nazifa',
+        'full' => 'Nur Nazlah Nazifa binti Mohd Ridzuan',
+        'role' => tr('Inovator Pelbagai Projek', 'Multi-Project Innovator'),
+        'project' => 'e-Competency KVKS · Durian Radar · HERS',
+        'image' => 'assets/images/home/innovator-nazlah-nazifa.webp',
+        'url' => 'innovator-nazlah-nazifa.php',
+        'bio' => tr(
+            'Menyumbang kepada pembangunan sistem, data dan aplikasi merentas e-Competency KVKS, Durian Radar dan HERS.',
+            'Contributes to systems, data and application development across e-Competency KVKS, Durian Radar and HERS.'
+        ),
+        'skills' => ['Dashboard', 'Data', 'Google Workspace'],
+    ],
+    [
+        'name' => 'Nur Damia Atiqah',
+        'full' => 'Nur Damia Atiqah binti Anwar Sadat',
+        'role' => tr('Inovator CAReS', 'CAReS Innovator'),
+        'project' => 'CAReS · IIE2025 Gold Award',
+        'image' => 'assets/images/home/innovator-damia-atiqah.webp',
+        'url' => 'innovator-damia-atiqah.php',
+        'bio' => tr(
+            'Ahli pasukan inovasi CAReS yang membantu membina sistem pelaporan aktiviti kolej yang lebih tersusun dan bersedia sebagai eviden pertandingan.',
+            'A CAReS innovation team member helping build a clearer college activity reporting system for review and competition evidence.'
+        ),
+        'skills' => ['Pelaporan Aktiviti', 'Dokumentasi', 'UI/UX'],
+    ],
 ];
 
 require __DIR__ . '/includes/header.php';
