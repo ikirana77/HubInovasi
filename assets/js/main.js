@@ -210,8 +210,8 @@ if (submissionForm && previewPitchButton) {
 }
 
 /**
- * CP10B adaptive submission flow. Section 03 enables only the allowlisted
- * field panel matching the solution area selected in Section 01.
+ * CP10F adaptive submission flow. Section 03 remains category-adaptive while
+ * Sections 04–07 manage their repeatable records and safe image previews.
  */
 if (submissionForm && submissionForm.classList.contains('adaptive-submission-form')) {
     const panels = Array.from(submissionForm.querySelectorAll('[data-submission-step]'));
@@ -227,6 +227,8 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
     let currentStep = Math.max(1, Math.min(8, Number(submissionForm.dataset.initialStep) || 1));
     let repeatableIndex = Date.now();
     let personIndex = Date.now();
+    let mentoringIndex = Date.now();
+    let journeyIndex = Date.now();
 
     const syncAdaptiveCategory = () => {
         const selectedCategory = categorySelect instanceof HTMLSelectElement ? categorySelect.value : '';
@@ -242,6 +244,39 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
         document.querySelectorAll('[data-review-category]').forEach((panel) => {
             panel.hidden = panel.dataset.reviewCategory !== selectedCategory;
         });
+    };
+
+    const mentorReferenceForRow = (row) => {
+        const nameInput = row.querySelector('[name$="[full_name]"]');
+        const idInput = row.querySelector('[name$="[id]"]');
+        const keyMatch = nameInput?.name.match(/^mentors\[([^\]]+)\]/);
+        if (!keyMatch) return '';
+        return Number(idInput?.value) > 0 ? `id:${idInput.value}` : `ref:${keyMatch[1]}`;
+    };
+
+    const syncMentorOptions = () => {
+        const mentors = Array.from(submissionForm.querySelectorAll('[data-person-row="mentor"]')).map((row) => ({
+            reference: mentorReferenceForRow(row),
+            name: row.querySelector('[name$="[full_name]"]')?.value.trim() || '',
+        })).filter((mentor) => mentor.reference && mentor.name);
+        submissionForm.querySelectorAll('[data-mentor-select]').forEach((select) => {
+            const selected = select.value;
+            const placeholder = select.options[0]?.textContent || 'Select mentor';
+            select.replaceChildren();
+            const emptyOption = document.createElement('option');
+            emptyOption.value = '';
+            emptyOption.textContent = placeholder;
+            select.append(emptyOption);
+            mentors.forEach((mentor) => {
+                const option = document.createElement('option');
+                option.value = mentor.reference;
+                option.textContent = mentor.name;
+                option.selected = mentor.reference === selected;
+                select.append(option);
+            });
+        });
+        const empty = submissionForm.querySelector('[data-mentoring-empty]');
+        if (empty) empty.hidden = submissionForm.querySelectorAll('[data-mentoring-row]').length > 0;
     };
 
     const updateReview = () => {
@@ -312,6 +347,47 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
                 output.append(item);
             }
         });
+        const mentoringOutput = document.querySelector('[data-review-mentoring]');
+        if (mentoringOutput) {
+            mentoringOutput.replaceChildren();
+            const values = Array.from(submissionForm.querySelectorAll('[data-mentoring-row]')).map((row) => {
+                const mentor = row.querySelector('[data-mentor-select]')?.selectedOptions[0]?.textContent.trim() || '';
+                const focus = row.querySelector('[name$="[guidance_focus]"]')?.value.trim() || '';
+                const outcome = row.querySelector('[name$="[guidance_outcome]"]')?.value.trim() || '';
+                return mentor && (focus || outcome) ? `${mentor} — ${focus}${outcome ? ` → ${outcome}` : ''}` : '';
+            }).filter(Boolean);
+            values.forEach((value) => {
+                const item = document.createElement('li');
+                item.textContent = value;
+                mentoringOutput.append(item);
+            });
+            if (!values.length) {
+                const item = document.createElement('li');
+                item.textContent = '—';
+                mentoringOutput.append(item);
+            }
+        }
+        const galleryCount = document.querySelector('[data-review-gallery-count]');
+        if (galleryCount) {
+            const gallery = submissionForm.querySelector('[data-media-collection="gallery"]')?.querySelectorAll('[data-media-row]').length || 0;
+            galleryCount.textContent = `${gallery} / 10`;
+        }
+        document.querySelectorAll('[data-review-media-count]').forEach((output) => {
+            output.textContent = String(submissionForm.querySelector(`[data-media-collection="${output.dataset.reviewMediaCount}"]`)?.querySelectorAll('[data-media-row]').length || 0);
+        });
+        const videoOutput = document.querySelector('[data-review-video]');
+        if (videoOutput) videoOutput.textContent = submissionForm.querySelector('[data-video-url]')?.value.trim() || '—';
+        const journeyOutput = document.querySelector('[data-review-journey]');
+        if (journeyOutput) {
+            journeyOutput.replaceChildren();
+            const journeys = Array.from(submissionForm.querySelectorAll('[data-journey-row]')).map((row) => {
+                const title = row.querySelector('[name$="[title]"]')?.value.trim() || '';
+                const description = row.querySelector('[name$="[description]"]')?.value.trim() || '';
+                return title ? `${title}${description ? ` — ${description}` : ''}` : '';
+            }).filter(Boolean);
+            journeys.forEach((value) => { const item = document.createElement('li'); item.textContent = value; journeyOutput.append(item); });
+            if (!journeys.length) { const item = document.createElement('li'); item.textContent = '—'; journeyOutput.append(item); }
+        }
         syncAdaptiveCategory();
     };
 
@@ -330,6 +406,7 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
         if (nextButton) nextButton.hidden = currentStep === 8;
         if (reviewButton) reviewButton.hidden = currentStep === 8;
         if (currentStep === 8) updateReview();
+        if (currentStep === 6) syncMentorOptions();
         if (focusPanel) {
             const panel = panels.find((item) => Number(item.dataset.submissionStep) === currentStep);
             panel?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
@@ -353,6 +430,15 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
 
     const validateParticipants = () => submissionForm.querySelectorAll('[data-person-row="student"]').length > 0;
 
+    const validateMedia = () => {
+        const gallery = submissionForm.querySelector('[data-media-collection="gallery"]')?.querySelectorAll('[data-media-row]').length || 0;
+        const solutionVisuals = submissionForm.querySelector('[data-media-collection="solution_visual"]')?.querySelectorAll('[data-media-row]').length || 0;
+        const journeys = Array.from(submissionForm.querySelectorAll('[data-journey-row]'));
+        return (gallery >= 1 || solutionVisuals >= 1) && journeys.length >= 1 && journeys.every((row) =>
+            Boolean(row.querySelector('[name$="[title]"]')?.value.trim() && row.querySelector('[name$="[description]"]')?.value.trim())
+        );
+    };
+
     const validatePanel = (step) => {
         const panel = panels.find((item) => Number(item.dataset.submissionStep) === step);
         if (!panel) return true;
@@ -374,6 +460,15 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
             }
             return false;
         }
+        if (step === 7 && !validateMedia()) {
+            showStep(step, true);
+            if (formMessage) {
+                formMessage.hidden = false;
+                formMessage.className = 'form-message form-message--error';
+                formMessage.textContent = submissionForm.dataset.mediaMessage || 'Add at least one image and one complete journey record.';
+            }
+            return false;
+        }
         const invalidField = Array.from(panel.querySelectorAll('input, select, textarea')).find((field) => !field.disabled && !field.checkValidity());
         if (!invalidField) return true;
         showStep(step, true);
@@ -391,7 +486,7 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
         if (validatePanel(currentStep)) showStep(currentStep + 1, true);
     });
     reviewButton?.addEventListener('click', () => {
-        if (validatePanel(1) && validatePanel(2) && validatePanel(3) && validatePanel(4) && validatePanel(5)) showStep(8, true);
+        if (validatePanel(1) && validatePanel(2) && validatePanel(3) && validatePanel(4) && validatePanel(5) && validatePanel(6) && validatePanel(7)) showStep(8, true);
     });
     stepButtons.forEach((button) => button.addEventListener('click', () => showStep(Number(button.dataset.stepTarget), true)));
     submissionForm.querySelectorAll('[data-go-to-step]').forEach((button) => button.addEventListener('click', () => showStep(Number(button.dataset.goToStep), true)));
@@ -422,8 +517,35 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
             const row = holder.firstElementChild;
             if (!row) return;
             list.append(row);
+            syncMentorOptions();
             row.querySelector('input:not([type="hidden"]), textarea, select')?.focus();
         });
+    });
+    const addMentoringButton = submissionForm.querySelector('[data-add-mentoring-record]');
+    addMentoringButton?.addEventListener('click', () => {
+        const template = submissionForm.querySelector('[data-mentoring-template]');
+        const list = submissionForm.querySelector('[data-mentoring-list]');
+        if (!(template instanceof HTMLTemplateElement) || !list || list.children.length >= 30) return;
+        const holder = document.createElement('div');
+        holder.innerHTML = template.innerHTML.replaceAll('__KEY__', `guidance-new-${mentoringIndex++}`);
+        const row = holder.firstElementChild;
+        if (!row) return;
+        list.append(row);
+        syncMentorOptions();
+        row.querySelector('[data-mentor-select]')?.focus();
+    });
+    submissionForm.querySelector('[data-add-journey]')?.addEventListener('click', () => {
+        const template = submissionForm.querySelector('[data-journey-template]');
+        const list = submissionForm.querySelector('[data-journey-list]');
+        if (!(template instanceof HTMLTemplateElement) || !list || list.children.length >= 20) return;
+        const holder = document.createElement('div');
+        holder.innerHTML = template.innerHTML.replaceAll('__KEY__', `journey-new-${journeyIndex++}`);
+        const row = holder.firstElementChild;
+        if (!row) return;
+        list.append(row);
+        const empty = submissionForm.querySelector('[data-journey-empty]');
+        if (empty) empty.hidden = true;
+        row.querySelector('input:not([type="hidden"])')?.focus();
     });
     submissionForm.addEventListener('click', (event) => {
         if (!(event.target instanceof Element)) return;
@@ -434,7 +556,38 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
         }
         const removePerson = event.target.closest('[data-remove-person]');
         if (removePerson instanceof HTMLButtonElement) {
-            removePerson.closest('[data-person-row]')?.remove();
+            const personRow = removePerson.closest('[data-person-row]');
+            if (personRow?.dataset.personRow === 'mentor') {
+                const reference = mentorReferenceForRow(personRow);
+                submissionForm.querySelectorAll('[data-mentoring-row]').forEach((record) => {
+                    if (record.querySelector('[data-mentor-select]')?.value === reference) record.remove();
+                });
+            }
+            personRow?.remove();
+            syncMentorOptions();
+            return;
+        }
+        const removeMentoring = event.target.closest('[data-remove-mentoring]');
+        if (removeMentoring instanceof HTMLButtonElement) {
+            removeMentoring.closest('[data-mentoring-row]')?.remove();
+            syncMentorOptions();
+            return;
+        }
+        const removeMedia = event.target.closest('[data-remove-media]');
+        if (removeMedia instanceof HTMLButtonElement) {
+            const collection = removeMedia.closest('[data-media-collection]');
+            removeMedia.closest('[data-media-row]')?.remove();
+            const firstCover = submissionForm.querySelector('[data-media-collection="gallery"] [data-media-row] input[name="gallery_cover"]');
+            if (firstCover instanceof HTMLInputElement && !submissionForm.querySelector('input[name="gallery_cover"]:checked')) firstCover.checked = true;
+            const empty = collection?.querySelector('[data-media-empty]');
+            if (empty) empty.hidden = Boolean(collection?.querySelector('[data-media-row]'));
+            return;
+        }
+        const removeJourney = event.target.closest('[data-remove-journey]');
+        if (removeJourney instanceof HTMLButtonElement) {
+            removeJourney.closest('[data-journey-row]')?.remove();
+            const empty = submissionForm.querySelector('[data-journey-empty]');
+            if (empty) empty.hidden = submissionForm.querySelectorAll('[data-journey-row]').length > 0;
             return;
         }
         const moveButton = event.target.closest('[data-move-person]');
@@ -452,6 +605,49 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
             });
             const row = event.target.closest('[data-person-row="student"]');
             if (row) row.parentElement?.prepend(row);
+        }
+        if (event.target.matches('[data-media-input]')) {
+            const input = event.target;
+            const collection = input.closest('[data-media-collection]');
+            const list = collection?.querySelector('[data-media-list]');
+            if (!collection || !list || !input.files) return;
+            list.querySelectorAll('[data-media-new]').forEach((row) => row.remove());
+            const existingCount = list.querySelectorAll('[data-media-row]').length;
+            const files = Array.from(input.files);
+            const limit = Number(collection.dataset.mediaLimit) || 1;
+            const mediaType = collection.dataset.mediaCollection || 'gallery';
+            const invalid = files.some((file) => !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) || existingCount + files.length > limit;
+            input.setCustomValidity(invalid ? (submissionForm.dataset.galleryFileMessage || 'Choose valid images under 5MB within this section limit.') : '');
+            if (invalid) { input.reportValidity(); return; }
+            files.forEach((file, index) => {
+                const reference = `new:${index}`;
+                const row = document.createElement('article');
+                row.className = 'gallery-editor-card'; row.draggable = true; row.dataset.mediaRow = ''; row.dataset.mediaNew = ''; row.dataset.mediaReference = reference;
+                const order = document.createElement('input'); order.type = 'hidden'; order.name = `${mediaType}_order[]`; order.value = reference;
+                const preview = document.createElement('div'); preview.className = 'gallery-editor-card__image';
+                const objectUrl = URL.createObjectURL(file); preview.dataset.objectUrl = objectUrl;
+                const image = document.createElement('img'); image.src = objectUrl; image.alt = ''; preview.append(image);
+                const body = document.createElement('div'); body.className = 'gallery-editor-card__body';
+                const handle = document.createElement('span'); handle.className = 'gallery-drag-handle'; handle.textContent = '↕';
+                body.append(handle);
+                if (mediaType === 'gallery') { const coverLabel = document.createElement('label'); coverLabel.className = 'form-check form-check--compact'; const cover = document.createElement('input'); cover.type = 'radio'; cover.name = 'gallery_cover'; cover.value = reference; const coverText = document.createElement('span'); coverText.textContent = 'Cover'; coverLabel.append(cover, coverText); body.append(coverLabel); }
+                const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'text-button text-button--danger'; remove.dataset.removeMedia = ''; remove.textContent = '×'; body.append(remove);
+                const captionLabel = document.createElement('label'); captionLabel.className = 'form-field gallery-caption'; const captionText = document.createElement('span'); captionText.textContent = 'Caption'; const caption = document.createElement('input'); caption.type = 'text'; caption.name = `${mediaType}_captions[${reference}]`; caption.maxLength = 1000; captionLabel.append(captionText, caption);
+                row.append(order, preview, body, captionLabel); list.append(row);
+            });
+            const firstCover = submissionForm.querySelector('[data-media-collection="gallery"] [data-media-row] input[name="gallery_cover"]');
+            if (firstCover instanceof HTMLInputElement && !submissionForm.querySelector('input[name="gallery_cover"]:checked')) firstCover.checked = true;
+            const empty = collection.querySelector('[data-media-empty]'); if (empty) empty.hidden = list.children.length > 0;
+            return;
+        }
+        if (event.target.matches('[data-media-replacement]') && event.target.files?.[0]) {
+            const file = event.target.files[0];
+            const valid = ['image/jpeg', 'image/png', 'image/webp'].includes(file.type) && file.size <= 5 * 1024 * 1024;
+            event.target.setCustomValidity(valid ? '' : (submissionForm.dataset.galleryFileMessage || 'Choose a valid image under 5MB.'));
+            if (!valid) { event.target.reportValidity(); return; }
+            const preview = event.target.closest('[data-media-row]')?.querySelector('[data-media-preview]');
+            if (preview) { if (preview.dataset.objectUrl) URL.revokeObjectURL(preview.dataset.objectUrl); const url = URL.createObjectURL(file); preview.dataset.objectUrl = url; const image = document.createElement('img'); image.src = url; image.alt = ''; preview.replaceChildren(image); }
+            return;
         }
         if (!event.target.matches('[data-photo-input]') || !event.target.files?.[0]) return;
         const file = event.target.files[0];
@@ -471,11 +667,32 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
         image.alt = '';
         preview.replaceChildren(image);
     });
+    let draggedRow = null;
+    submissionForm.addEventListener('dragstart', (event) => {
+        if (!(event.target instanceof Element)) return;
+        draggedRow = event.target.closest('[data-media-row], [data-journey-row]');
+        if (draggedRow instanceof HTMLElement) { draggedRow.classList.add('is-dragging'); event.dataTransfer?.setData('text/plain', 'reorder'); }
+    });
+    submissionForm.addEventListener('dragover', (event) => {
+        if (!(draggedRow instanceof HTMLElement) || !(event.target instanceof Element)) return;
+        const target = event.target.closest(draggedRow.matches('[data-media-row]') ? '[data-media-row]' : '[data-journey-row]');
+        if (!target || target === draggedRow || target.parentElement !== draggedRow.parentElement) return;
+        event.preventDefault();
+        const bounds = target.getBoundingClientRect();
+        const sameGalleryRow = draggedRow.matches('[data-media-row]') && event.clientY >= bounds.top && event.clientY <= bounds.bottom;
+        const insertBefore = sameGalleryRow ? event.clientX < bounds.left + bounds.width / 2 : event.clientY < bounds.top + bounds.height / 2;
+        target.parentElement?.insertBefore(draggedRow, insertBefore ? target : target.nextSibling);
+    });
+    submissionForm.addEventListener('dragend', () => { if (draggedRow instanceof HTMLElement) draggedRow.classList.remove('is-dragging'); draggedRow = null; });
+    submissionForm.addEventListener('input', (event) => {
+        if (!(event.target instanceof Element)) return;
+        if (event.target.matches('[data-person-row="mentor"] [name$="[full_name]"]')) syncMentorOptions();
+    });
 
     submissionForm.addEventListener('submit', (event) => {
         const submitter = event.submitter;
         if (!(submitter instanceof HTMLButtonElement) || submitter.value !== 'submit_review') return;
-        for (const step of [1, 2, 3, 4, 5, 8]) {
+        for (const step of [1, 2, 3, 4, 5, 6, 7, 8]) {
             if (!validatePanel(step)) {
                 event.preventDefault();
                 return;
@@ -484,5 +701,6 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
     });
 
     syncAdaptiveCategory();
+    syncMentorOptions();
     showStep(currentStep);
 }

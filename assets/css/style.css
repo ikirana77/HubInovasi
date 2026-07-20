@@ -894,6 +894,20 @@ button, input, select, textarea { font-family: 'Inter', Arial, sans-serif !impor
 .submission-review-people section { padding: 16px 18px; border: var(--line); border-radius: 8px; }
 .submission-review-people h3 { margin: 0; font: 700 1rem 'Space Grotesk', sans-serif; }
 .submission-review-people ul { margin: 10px 0 0; padding-left: 20px; }
+.mentoring-editor { margin-top: 26px; }
+.mentoring-editor > header { display: flex; justify-content: space-between; gap: 24px; align-items: start; margin-bottom: 18px; }
+.mentoring-editor > header h2 { margin: 0; font: 700 1.25rem 'Space Grotesk', sans-serif; }
+.mentoring-editor > header p { margin: 6px 0 0; color: #68635e; font-size: .88rem; }
+.mentoring-editor__empty { padding: 22px; background: #f8f5f0; border: 1px dashed #b8b1aa; border-radius: 8px; text-align: center; }
+.mentoring-editor__empty[hidden] { display: none; }
+.mentoring-editor__empty p { margin: 0; }
+.mentoring-editor__list { display: grid; gap: 16px; }
+.mentoring-card { display: grid; gap: 16px; padding: 20px; background: #faf8f4; border: 1px solid #d7d1ca; border-radius: 8px; }
+.mentoring-card__heading { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #dfdad3; }
+.mentoring-card__heading button { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid #c8c0b8; border-radius: 50%; background: white; color: #8a3636; font-size: 1.2rem; cursor: pointer; }
+.submission-review-mentoring { margin: 30px 0 24px; padding: 18px; border: var(--line); border-radius: 8px; }
+.submission-review-mentoring h2 { margin: 0; font: 700 1.25rem 'Space Grotesk', sans-serif; }
+.submission-review-mentoring ul { margin: 10px 0 0; padding-left: 20px; }
 .published-people { display: grid; gap: 12px; margin-top: 18px; }
 .published-person { display: grid; grid-template-columns: 64px 1fr; gap: 14px; align-items: center; padding: 14px; border: 1px solid #ddd5cd; border-radius: 8px; background: #faf8f4; }
 .published-person:not(:has(img)) { grid-template-columns: 1fr; }
@@ -904,6 +918,47 @@ button, input, select, textarea { font-family: 'Inter', Arial, sans-serif !impor
 .published-person strong { font-size: .95rem; }
 .published-person small { color: #68635e; }
 .published-person p { margin: 2px 0 0; font-size: .84rem; }
+.media-builder-card { display: grid; gap: 20px; margin: 22px 0; padding: 24px; border: 1px solid #ddd5cd; border-radius: 12px; background: #fff; }
+.media-builder-card > header { display: grid; grid-template-columns: 42px 1fr; gap: 12px; align-items: start; }
+.media-builder-card > header > span { font-size: 1.7rem; line-height: 1; }
+.media-builder-card h2, .media-builder-card header p { margin: 0; }
+.media-builder-card header p { margin-top: 5px; color: var(--muted); font-size: .88rem; }
+.media-builder-card--gallery { border-top: 5px solid var(--magenta); }
+.media-builder-card--problem-visual { border-top: 5px solid #d44b57; }
+.media-builder-card--solution-visual { border-top: 5px solid #258b78; }
+.media-builder-card--poster { border-top: 5px solid #7157a8; }
+.media-builder-card--video { border-top: 5px solid var(--tangerine); }
+.media-builder-card--journey { border-top: 5px solid var(--neutral); }
+.gallery-dropzone { display: grid; place-items: center; gap: 6px; padding: 24px; border: 2px dashed #bbb1a8; border-radius: 10px; background: #faf7f2; text-align: center; cursor: pointer; }
+.gallery-dropzone span { color: var(--muted); font-size: .8rem; }
+.gallery-dropzone input { max-width: 100%; margin-top: 8px; }
+.gallery-editor { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.gallery-editor-card { overflow: hidden; border: 1px solid #d9d0c8; border-radius: 10px; background: #faf8f4; }
+.gallery-editor-card.is-dragging, .journey-editor-card.is-dragging { opacity: .45; }
+.gallery-editor-card__image { aspect-ratio: 16 / 10; background: #e8e2dc; }
+.gallery-editor-card__image img { width: 100%; height: 100%; object-fit: cover; }
+.gallery-editor-card__body { display: flex; align-items: center; gap: 10px; padding: 10px; }
+.gallery-caption { margin: 0; padding: 0 10px 12px; }
+.gallery-drag-handle { cursor: grab; user-select: none; font-size: 1.2rem; }
+.gallery-replace { margin-left: auto; font-size: .72rem; font-weight: 700; cursor: pointer; }
+.gallery-replace input { display: block; width: 120px; margin-top: 3px; font-size: .65rem; }
+.gallery-empty, .journey-empty { margin: 0; padding: 14px; border-radius: 8px; background: #f4f0eb; color: var(--muted); text-align: center; }
+.journey-editor { display: grid; gap: 12px; }
+.journey-editor-card { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 12px; padding: 16px; border: 1px solid #ddd5cd; border-radius: 10px; background: #faf8f4; }
+.journey-editor-card__toolbar { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; }
+.submission-review-media { margin-top: 28px; }
+.submission-review-media > section { padding: 12px 0; border-top: 1px solid #ddd5cd; }
+.submission-review-media h3, .submission-review-media p { margin: 0 0 5px; }
+.admin-media-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.admin-media-gallery figure { margin: 0; }
+.admin-media-gallery img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 8px; }
+.admin-media-gallery figcaption { margin-top: 5px; font-size: .75rem; }
+.published-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+.published-gallery figure { margin: 0; }
+.published-gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; }
+.published-gallery figure:first-child { grid-column: span 2; grid-row: span 2; }
+.published-gallery-video { margin-top: 16px; }
+@media (max-width: 680px) { .gallery-editor, .journey-editor-card, .admin-media-gallery, .published-gallery { grid-template-columns: 1fr; } .published-gallery figure:first-child { grid-column: auto; grid-row: auto; } .gallery-editor-card__body { flex-wrap: wrap; } }
 .submission-step :disabled { cursor: not-allowed; opacity: .62; }
 .person-shell { display: grid; grid-template-columns: 120px 1fr; gap: 22px; align-items: start; margin-bottom: 20px; padding: 20px; border: 1px dashed #b8b1aa; border-radius: 8px; }
 .person-shell__photo { display: grid; place-items: center; aspect-ratio: 1; background: #eee9e3; border-radius: 50%; color: #817970; font-size: 2rem; }
@@ -931,6 +986,7 @@ button, input, select, textarea { font-family: 'Inter', Arial, sans-serif !impor
     .repeatable-section > header { align-items: stretch; flex-direction: column; }
     .people-editor > header { align-items: stretch; flex-direction: column; }
     .person-editor-card__layout { grid-template-columns: 1fr; }
+    .mentoring-editor > header { align-items: stretch; flex-direction: column; }
 }
 
 /* CP05 — database workflow and admin review */
@@ -1049,6 +1105,14 @@ button, input, select, textarea { font-family: 'Inter', Arial, sans-serif !impor
 .admin-people-review p small { color: #68635e; }
 .admin-people-review p em { font-size: .82rem; font-style: normal; }
 @media (max-width: 640px) { .admin-people-review > div { grid-template-columns: 1fr; } }
+.admin-mentoring-review { margin-bottom: 24px; padding: 24px; background: white; border: var(--line); border-radius: 9px; }
+.admin-mentoring-review h2 { margin: 0 0 16px; font: 700 1.35rem 'Space Grotesk', sans-serif; }
+.admin-mentoring-review > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.admin-mentoring-review article { padding: 16px; background: #faf8f4; border: 1px solid #ddd5cd; border-radius: 8px; }
+.admin-mentoring-review article > span { display: block; margin-top: 3px; color: var(--magenta); font-size: .72rem; font-weight: 700; }
+.admin-mentoring-review article p { margin: 12px 0 0; font-size: .86rem; }
+.admin-mentoring-review article p b { display: block; margin-bottom: 3px; }
+@media (max-width: 640px) { .admin-mentoring-review > div { grid-template-columns: 1fr; } }
 .admin-review-sidebar { display: grid; gap: 20px; position: sticky; top: 20px; }
 .admin-review-sidebar > section { padding: 25px; background: white; border: var(--line); border-radius: 9px; }
 .admin-review-sidebar h2 { margin: 0 0 18px; font: 700 1.55rem 'Space Grotesk',sans-serif; }

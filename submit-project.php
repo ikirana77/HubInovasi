@@ -1,9 +1,11 @@
 <?php
-/** CP10D adaptive, bilingual submission builder with the existing review workflow. */
+/** CP10F adaptive, bilingual submission builder with the existing review workflow. */
 require_once __DIR__ . '/includes/submission-repository.php';
 require_once __DIR__ . '/includes/submission-category-details.php';
 require_once __DIR__ . '/includes/submission-impact-details.php';
 require_once __DIR__ . '/includes/submission-participants.php';
+require_once __DIR__ . '/includes/submission-mentoring-records.php';
+require_once __DIR__ . '/includes/submission-media-details.php';
 require_once __DIR__ . '/includes/user-auth.php';
 
 $user = current_user();
@@ -39,6 +41,8 @@ $initialStep = max(1, min(8, $requestedStep));
 $categoryDetails = [];
 $impactDetails = ['metrics' => [], 'evidence' => [], 'recognitions' => []];
 $participantDetails = ['students' => [], 'mentors' => []];
+$mentoringRecords = [];
+$mediaDetails = ['problem_visual'=>[], 'solution_visual'=>[], 'gallery'=>[], 'poster'=>[], 'video_url'=>'', 'milestones'=>[]];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf($_POST['csrf_token'] ?? null)) {
@@ -48,6 +52,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $categoryDetails = submission_category_details_from_source($_POST, (string) $payload['solution_area']);
         $impactDetails = submission_impact_payload($_POST);
         $participantDetails = submission_participants_payload($_POST);
+        $mentoringRecords = submission_mentoring_payload($_POST);
+        $mediaPayload = submission_media_payload($_POST);
+        $storedMedia = $submission ? submission_media_details_for_submission((int) $submission['id']) : $mediaDetails;
+        foreach (array_keys(submission_media_collection_definitions()) as $mediaType) {
+            $storedByReference = [];
+            foreach (($storedMedia[$mediaType] ?? []) as $image) $storedByReference['id:' . $image['id']] = $image;
+            $mediaDetails[$mediaType] = [];
+            foreach (($mediaPayload['collections'][$mediaType]['order'] ?? []) as $reference) {
+                if (!isset($storedByReference[$reference])) continue;
+                $storedByReference[$reference]['is_cover'] = $mediaType === SUBMISSION_GALLERY_TYPE && $mediaPayload['cover'] === $reference;
+                $storedByReference[$reference]['caption'] = $mediaPayload['collections'][$mediaType]['captions'][$reference] ?? '';
+                $mediaDetails[$mediaType][] = $storedByReference[$reference];
+            }
+        }
+        $mediaDetails['video_url'] = $mediaPayload['video_url'];
+        $mediaDetails['milestones'] = $mediaPayload['milestones'];
         if ($user) {
             $payload['submitter_name'] = $user['full_name'];
             $payload['submitter_email'] = $user['email'];
@@ -69,18 +89,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($targetStatus === 'pending_review' && submission_participants_validation_errors($participantDetails, true)) {
             $initialStep = 5;
             $serverMessage = ['type' => 'error', 'text' => tr('Lengkapkan maklumat pelajar dan mentor dalam Bahagian 05 sebelum menghantar untuk semakan.', 'Complete the student and mentor details in Section 05 before submitting for review.')];
+        } elseif ($targetStatus === 'pending_review' && submission_mentoring_validation_errors($mentoringRecords, true)) {
+            $initialStep = 6;
+            $serverMessage = ['type' => 'error', 'text' => tr('Lengkapkan mentor, perkara yang dibimbing dan hasil bagi setiap rekod bimbingan.', 'Complete the mentor, guidance focus, and outcome for every mentoring record.')];
+        } elseif ($targetStatus === 'pending_review' && submission_media_validation_errors($mediaPayload, array_combine(array_keys(submission_media_collection_definitions()), array_map(static fn (string $type): int => count(submission_gallery_uploads($_FILES, submission_media_source_prefix($type) . '_images')), array_keys(submission_media_collection_definitions()))), true)) {
+            $initialStep = 7;
+            $serverMessage = ['type' => 'error', 'text' => tr('Tambah sekurang-kurangnya satu Visual Penyelesaian atau gambar Galeri, serta satu rekod perjalanan lengkap. Semak URL video jika diberikan.', 'Add at least one Solution Visual or Gallery image, plus one complete journey record. Check the video URL if supplied.')];
         } else {
             $pdo = db();
             $ownsTransaction = !$pdo->inTransaction();
             $participantFilePlan = ['created' => [], 'obsolete' => []];
+            $galleryFilePlan = ['created' => [], 'obsolete' => []];
             try {
                 if ($ownsTransaction) $pdo->beginTransaction();
                 $submission = save_submission($payload, $submissionToken ?: null, $targetStatus, $user ? (int) $user['id'] : null);
                 save_submission_category_details((int) $submission['id'], (string) $payload['solution_area'], $categoryDetails);
                 save_submission_impact_details((int) $submission['id'], $impactDetails);
                 $participantFilePlan = save_submission_participants((int) $submission['id'], $participantDetails, $_FILES);
+                save_submission_mentoring_records((int) $submission['id'], $mentoringRecords, $participantFilePlan['mentor_ids'] ?? []);
+                $galleryFilePlan = save_submission_media_details((int) $submission['id'], $mediaPayload, $_FILES);
                 if ($ownsTransaction) $pdo->commit();
                 finalize_submission_profile_files($participantFilePlan, true);
+                finalize_submission_gallery_files($galleryFilePlan, true);
                 if ($user && $targetStatus === 'pending_review') {
                     $_SESSION['user_flash'] = ['success', tr('Projek telah dihantar untuk semakan admin.', 'The project has been submitted for administrator review.')];
                     header('Location: dashboard/index.php');
@@ -92,9 +122,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } catch (Throwable $exception) {
                 if ($ownsTransaction && $pdo->inTransaction()) $pdo->rollBack();
                 finalize_submission_profile_files($participantFilePlan, false);
+                finalize_submission_gallery_files($galleryFilePlan, false);
                 error_log('Submission save failed: ' . $exception->getMessage());
-                $serverMessage = $exception instanceof SubmissionPhotoException
-                    ? ['type' => 'error', 'text' => tr($exception->getMessage(), 'The profile photo could not be processed. Check its format, size, and server image support.')]
+                $serverMessage = $exception instanceof SubmissionPhotoException || $exception instanceof SubmissionMediaException
+                    ? ['type' => 'error', 'text' => tr($exception->getMessage(), 'The image could not be processed. Check its format, size, and server image support.')]
                     : ['type' => 'error', 'text' => tr('Submission tidak dapat disimpan. Sila cuba lagi.', 'The submission could not be saved. Please try again.')];
             }
         }
@@ -129,9 +160,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' && $submission) {
     $categoryDetails = submission_category_details_for_submission((int) $submission['id']);
     $impactDetails = submission_impact_details_for_submission((int) $submission['id']);
     $participantDetails = submission_participants_for_submission((int) $submission['id']);
+    $mentoringRecords = submission_mentoring_records_for_submission((int) $submission['id']);
+    $mediaDetails = submission_media_details_for_submission((int) $submission['id']);
 }
 $studentProgrammeOptions = submission_student_programmes();
 $studyYearOptions = submission_study_years();
+$guidanceTypeOptions = submission_guidance_types();
 $developmentOptions = ['Concept and Design Stage', 'Functional Prototype', 'Functional Prototype / Active Development', 'Functional Pilot / Release Candidate', 'Institutional System / Pilot Implementation'];
 $evidenceOptions = [
     'Belum diuji' => tr('Belum diuji', 'Not tested yet'),
@@ -160,7 +194,7 @@ require __DIR__ . '/includes/header.php';
 <main id="main-content" class="inner-page submission-page">
     <section class="page-hero page-hero--accent">
         <div class="container page-hero__inner">
-            <p class="eyebrow"><?= e(tr('Adaptive Submission Builder • CP10D', 'Adaptive Submission Builder • CP10D')) ?></p>
+            <p class="eyebrow"><?= e(tr('Adaptive Submission Builder • CP10F', 'Adaptive Submission Builder • CP10F')) ?></p>
             <h1><?= tr('Bina cerita projek<br><span>langkah demi langkah.</span>', 'Build your project story<br><span>step by step.</span>') ?></h1>
             <p><?= e(tr('Lapan langkah yang jelas untuk menyediakan projek sebelum semakan pentadbir.', 'Eight clear steps to prepare your project before administrator review.')) ?></p>
         </div>
@@ -186,7 +220,7 @@ require __DIR__ . '/includes/header.php';
                 <p class="submission-stepper__status" aria-live="polite"><?= e(tr('Langkah', 'Step')) ?> <span id="current-step-number"><?= $initialStep ?></span> / 8</p>
             </aside>
 
-            <form id="submission-form" class="pitch-form adaptive-submission-form" method="post" enctype="multipart/form-data" action="submit-project.php<?= $submissionToken ? '?token=' . rawurlencode($submissionToken) : '' ?>" novalidate data-initial-step="<?= $initialStep ?>" data-required-message="<?= e(tr('Lengkapkan medan wajib dalam langkah ini sebelum meneruskan.', 'Complete the required fields in this step before continuing.')) ?>" data-impact-message="<?= e(tr('Tambah sekurang-kurangnya satu metrik bernilai dan satu bukti berpautan.', 'Add at least one valued metric and one linked evidence item.')) ?>" data-participant-message="<?= e(tr('Tambah sekurang-kurangnya seorang pelajar dan lengkapkan semua rekod individu.', 'Add at least one student and complete every person record.')) ?>" data-leader-label="<?= e(tr('Ketua', 'Leader')) ?>">
+            <form id="submission-form" class="pitch-form adaptive-submission-form" method="post" enctype="multipart/form-data" action="submit-project.php<?= $submissionToken ? '?token=' . rawurlencode($submissionToken) : '' ?>" novalidate data-initial-step="<?= $initialStep ?>" data-required-message="<?= e(tr('Lengkapkan medan wajib dalam langkah ini sebelum meneruskan.', 'Complete the required fields in this step before continuing.')) ?>" data-impact-message="<?= e(tr('Tambah sekurang-kurangnya satu metrik bernilai dan satu bukti berpautan.', 'Add at least one valued metric and one linked evidence item.')) ?>" data-participant-message="<?= e(tr('Tambah sekurang-kurangnya seorang pelajar dan lengkapkan semua rekod individu.', 'Add at least one student and complete every person record.')) ?>" data-media-message="<?= e(tr('Bahagian 07 memerlukan sekurang-kurangnya satu Visual Penyelesaian atau gambar Galeri, serta satu rekod perjalanan lengkap.', 'Section 07 requires at least one Solution Visual or Gallery image, plus one complete journey record.')) ?>" data-gallery-file-message="<?= e(tr('Pilih JPG, PNG atau WebP yang tidak melebihi 5MB.', 'Choose a JPG, PNG or WebP image no larger than 5MB.')) ?>" data-leader-label="<?= e(tr('Ketua', 'Leader')) ?>">
                 <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                 <input type="hidden" name="submission_token" value="<?= e($submissionToken) ?>">
                 <input type="hidden" name="current_step" id="current-step-input" value="<?= $initialStep ?>">

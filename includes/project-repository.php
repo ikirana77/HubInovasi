@@ -3,6 +3,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/taxonomy.php';
 require_once __DIR__ . '/submission-participants.php';
+require_once __DIR__ . '/submission-media-details.php';
+require_once __DIR__ . '/submission-impact-details.php';
 
 function decode_list(?string $json): array
 {
@@ -134,7 +136,11 @@ function get_public_project_by_slug(string $slug): ?array
         $submissionStatement = db()->prepare("SELECT id FROM submissions WHERE linked_project_id = ? AND status = 'published' ORDER BY reviewed_at DESC, id DESC LIMIT 1");
         $submissionStatement->execute([$project['id']]);
         $submissionId = (int) ($submissionStatement->fetchColumn() ?: 0);
-        if ($submissionId) $project['submission_people'] = submission_participants_for_submission($submissionId);
+        if ($submissionId) {
+            $project['submission_people'] = submission_participants_for_submission($submissionId);
+            $project['submission_media'] = submission_media_details_for_submission($submissionId);
+            $project['submission_impact'] = submission_impact_details_for_submission($submissionId);
+        }
     } catch (Throwable $exception) {
         // CP10D is optional for projects published before the migration.
     }

@@ -221,7 +221,7 @@ function save_submission_participants(int $submissionId, array $payload, array $
     if ($submissionId < 1) throw new InvalidArgumentException('Submission tidak sah.');
     $pdo = db();
     $ownsTransaction = !$pdo->inTransaction();
-    $plan = ['created' => [], 'obsolete' => []];
+    $plan = ['created' => [], 'obsolete' => [], 'mentor_ids' => []];
     if ($ownsTransaction) $pdo->beginTransaction();
     try {
         $studentStatement = $pdo->prepare('SELECT id, profile_image_path FROM submission_people WHERE submission_id = ?');
@@ -286,9 +286,12 @@ function save_submission_participants(int $submissionId, array $payload, array $
             if ($id) {
                 $mentorUpdate->execute([...$values, $id, $submissionId]);
                 $keptMentors[$id] = true;
+                $plan['mentor_ids'][$mentor['row_key']] = $id;
             } else {
                 $mentorInsert->execute([$submissionId, ...$values]);
-                $keptMentors[(int) $pdo->lastInsertId()] = true;
+                $newMentorId = (int) $pdo->lastInsertId();
+                $keptMentors[$newMentorId] = true;
+                $plan['mentor_ids'][$mentor['row_key']] = $newMentorId;
             }
         }
         $deleteMentor = $pdo->prepare('DELETE FROM submission_mentors WHERE id = ? AND submission_id = ?');
@@ -303,7 +306,7 @@ function save_submission_participants(int $submissionId, array $payload, array $
         if ($ownsTransaction) {
             $pdo->commit();
             finalize_submission_profile_files($plan, true, $options);
-            return ['created' => [], 'obsolete' => []];
+            return ['created' => [], 'obsolete' => [], 'mentor_ids' => $plan['mentor_ids']];
         }
         return $plan;
     } catch (Throwable $exception) {
