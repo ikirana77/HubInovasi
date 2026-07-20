@@ -56,6 +56,9 @@ $trendingProjects = [
     ['slug' => 'hers', 'name' => 'HERS', 'description' => tr('Laluan pembelajaran diperibadikan untuk setiap pelajar.', 'Personalised learning pathways for every student.'), 'tags' => ['AI/ML', tr('Pendidikan', 'Education')], 'image' => 'project-hers.webp'],
     ['slug' => 'spark', 'name' => 'SPARK', 'description' => tr('Pembantu parkir pintar untuk pengalaman kampus yang lancar.', 'Smart parking assistant for a seamless campus experience.'), 'tags' => ['IoT', tr('Kampus Pintar', 'Smart Campus')], 'image' => 'project-spark.webp'],
     ['slug' => 'durian-radar', 'name' => 'Durian Radar', 'description' => tr('Cerapan AI untuk perancangan hasil durian yang lebih baik.', 'AI insights for better durian harvest planning.'), 'tags' => ['AI/ML', tr('Pertanian', 'Agriculture')], 'image' => 'project-durian-radar.webp'],
+    ['slug' => 'cms-quest', 'name' => 'CMS Quest', 'description' => tr('Chatbot pintar untuk perkhidmatan kampus dan sokongan pelajar.', 'Smart chatbot for campus services and student support.'), 'tags' => ['NLP', 'Chatbot'], 'image' => 'project-cms-quest.webp'],
+    ['slug' => 'ecotrack', 'name' => 'EcoTrack', 'description' => tr('Jejak, kurangkan dan laporkan jejak karbon kampus.', 'Track, reduce and report the campus carbon footprint.'), 'tags' => [tr('Kelestarian', 'Sustainability'), 'IoT'], 'image' => 'project-ecotrack.webp'],
+    ['slug' => 'medbuddy', 'name' => 'MedBuddy', 'description' => tr('Rakan kesihatan untuk kesejahteraan pelajar.', 'A health companion for student well-being.'), 'tags' => [tr('Kesihatan', 'Health'), tr('Mudah Alih', 'Mobile')], 'image' => 'project-medbuddy.webp'],
 ];
 
 $solutionAreas = hub_solution_areas();
@@ -71,19 +74,6 @@ $innovators = [
         'project' => 'e-Competency KVKS · Durian Radar · HERS',
         'image' => 'innovator-nazlah-nazifa.webp',
         'url' => 'innovator-nazlah-nazifa.php',
-        'bio' => tr(
-            'Menyumbang kepada pembangunan sistem, data dan aplikasi merentas e-Competency KVKS, Durian Radar dan HERS.',
-            'Contributes to systems, data and application development across e-Competency KVKS, Durian Radar and HERS.'
-        ),
-        'skills' => ['Dashboard', 'Data', 'Google Workspace'],
-    ],
-    [
-        'name' => 'Alya Qausar',
-        'full' => 'Nur Alya Qausar binti Azhar',
-        'role' => tr('Inovator Pelbagai Projek', 'Multi-Project Innovator'),
-        'project' => 'e-Competency KVKS · Durian Radar · HERS',
-        'image' => 'innovator-qausar.webp',
-        'url' => 'innovator-qausar.php',
         'bio' => tr(
             'Menyumbang kepada pembangunan sistem, data dan aplikasi merentas e-Competency KVKS, Durian Radar dan HERS.',
             'Contributes to systems, data and application development across e-Competency KVKS, Durian Radar and HERS.'
@@ -202,8 +192,6 @@ require __DIR__ . '/includes/header.php';
 </main>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>
-
-
 
 
 

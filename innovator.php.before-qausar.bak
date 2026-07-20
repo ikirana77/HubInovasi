@@ -13,7 +13,7 @@ $innovators = [
         'class' => tr('Pasukan Pembangunan Pelajar','Student Development Team'),
         'role' => tr('Inovator Pelbagai Projek','Multi-Project Innovator'),
         'project' => 'e-Competency KVKS · Durian Radar · HERS',
-        'image' => 'assets/images/home/innovator-nazlah-nazifa.webp',
+        'image' => 'innovator-nazlah-nazifa.webp',
         'url' => 'innovator-nazlah-nazifa.php',
         'bio' => tr('Menyumbang kepada pembangunan sistem, data dan aplikasi merentas e-Competency KVKS, Durian Radar dan HERS.', 'Contributes to system, data and application development across e-Competency KVKS, Durian Radar and HERS.'),
         'skills' => ['Dashboard','Data','Google Workspace','QR','Aplikasi Mudah Alih'],
@@ -26,7 +26,7 @@ $innovators = [
         'class' => tr('Pasukan Pembangunan Pelajar','Student Development Team'),
         'role' => tr('Inovator Pelbagai Projek','Multi-Project Innovator'),
         'project' => 'e-Competency KVKS · Durian Radar · HERS',
-        'image' => 'assets/images/home/innovator-qausar.webp',
+        'image' => 'innovator-qausar.webp',
         'url' => 'innovator-qausar.php',
         'bio' => tr('Menyumbang kepada pembangunan sistem, data dan aplikasi merentas e-Competency KVKS, Durian Radar dan HERS.', 'Contributes to system, data and application development across e-Competency KVKS, Durian Radar and HERS.'),
         'skills' => ['Dashboard','Data','Google Workspace','QR','Aplikasi Mudah Alih'],
@@ -79,7 +79,7 @@ $innovators = [
         'role' => tr('Inovator CAReS', 'CAReS Innovator'),
         'project' => 'CAReS',
         'class' => 'KVKS',
-        'image' => 'assets/images/home/innovator-damia-atiqah.webp',
+        'image' => 'innovator-damia-atiqah.webp',
         'url' => 'innovator-damia-atiqah.php',
         'bio' => tr(
             'Ahli pasukan inovasi CAReS yang membantu membina sistem pelaporan aktiviti kolej yang lebih tersusun, mudah disemak dan bersedia sebagai eviden pertandingan.',
@@ -175,8 +175,6 @@ require __DIR__.'/includes/header.php';
  </section>
 </div></main>
 <?php require __DIR__.'/includes/footer.php'; ?>
-
-
 
 
 
