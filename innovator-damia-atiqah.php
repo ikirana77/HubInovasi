@@ -2,7 +2,7 @@
 require_once __DIR__.'/includes/bootstrap.php';
 require_once __DIR__.'/includes/public-ui.php';
 
-$pageTitle = 'Khadijah Hanum | '.tr('Multi-Project Innovator','Multi-Project Innovator');
+$pageTitle = 'Nur Damia Atiqah | '.tr('Multi-Project Innovator','Multi-Project Innovator');
 $activePage = 'innovators';
 enable_public_mockup('mockup-profile');
 
@@ -14,17 +14,17 @@ require __DIR__.'/includes/header.php';
   <span>›</span>
   <a href="innovator.php"><?= e(tr('Inovator','Innovators')) ?></a>
   <span>›</span>
-  <strong>Khadijah Hanum</strong>
+  <strong>Nur Damia Atiqah</strong>
  </nav>
 
  <section class="profile-top">
   <div class="profile-portrait">
-   <img src="assets/images/home/innovator-khadijah-hanum.webp" alt="Potret Khadijah Hanum binti Mohamad Nizam, innovator pelajar projek e-Competency KVKS, Durian Radar dan HERS">
+   <img src="assets/images/home/innovator-damia-atiqah.webp" alt="Potret Nur Damia Atiqah binti Mohamad Nizam, innovator pelajar projek e-Competency KVKS, Durian Radar dan HERS">
   </div>
 
   <div class="profile-copy">
    <span class="pm-kicker"><?= e(tr('INOVATOR','INNOVATOR')) ?></span>
-   <h1>Khadijah Hanum</h1>
+   <h1>Nur Damia Atiqah</h1>
    <p><strong class="profile-role">Multi-Project Innovator</strong> · 2DVM KPD</p>
    <blockquote class="profile-quote"><?= e(tr('Saya belajar bahawa sistem yang baik perlu dibina berdasarkan keperluan sebenar pengguna, bukan sekadar fungsi yang nampak menarik.','I learned that a good system must be built around real user needs, not only attractive-looking features.')) ?></blockquote>
    <div class="detail-meta">
@@ -78,7 +78,7 @@ require __DIR__.'/includes/header.php';
  <section class="profile-content">
   <article class="project-showcase pm-card">
    <div class="pm-section-title"><h2><?= e(tr('Profil Ringkas','Profile Summary')) ?></h2></div>
-   <p><?= e(tr('Khadijah Hanum binti Mohamad Nizam ialah pelajar 2DVM KPD yang mempunyai pengalaman membangunkan beberapa projek sistem digital merentas keperluan pengguna yang berbeza. Beliau merupakan ahli kumpulan pembangunan e-Competency KVKS, sebuah inovasi digital berasaskan Google Workspace untuk pengurusan rekod, pensijilan dan penglibatan pensyarah secara bersepadu dan masa nyata, sebelum terus menyumbang kepada projek Durian Radar dan HERS.','Khadijah Hanum binti Mohamad Nizam is a 2DVM KPD student with experience developing multiple digital system projects across different user needs. She was part of the e-Competency KVKS development team, a Google Workspace-based innovation for managing lecturer records, certification and involvement in an integrated real-time system, before continuing to contribute to Durian Radar and HERS.')) ?></p>
+   <p><?= e(tr('Nur Damia Atiqah binti Mohamad Nizam ialah pelajar 2DVM KPD yang mempunyai pengalaman membangunkan beberapa projek sistem digital merentas keperluan pengguna yang berbeza. Beliau merupakan ahli kumpulan pembangunan e-Competency KVKS, sebuah inovasi digital berasaskan Google Workspace untuk pengurusan rekod, pensijilan dan penglibatan pensyarah secara bersepadu dan masa nyata, sebelum terus menyumbang kepada projek Durian Radar dan HERS.','Nur Damia Atiqah binti Mohamad Nizam is a 2DVM KPD student with experience developing multiple digital system projects across different user needs. She was part of the e-Competency KVKS development team, a Google Workspace-based innovation for managing lecturer records, certification and involvement in an integrated real-time system, before continuing to contribute to Durian Radar and HERS.')) ?></p>
    <p><?= e(tr('Penglibatan dalam tiga projek ini menunjukkan perkembangan beliau sebagai innovator pelajar yang mampu memahami keperluan sistem, aliran pengguna, pengurusan data dan fungsi aplikasi dalam pelbagai konteks. Dalam e-Competency KVKS, projek ini menggabungkan Google Forms, Google Sheets dan Looker Studio untuk membantu pentadbiran kolej mengakses data kompetensi pensyarah dengan lebih cepat, tersusun dan berasaskan bukti.','Her involvement in these three projects shows her growth as a student innovator who can understand system requirements, user flows, data management and application functionality across different contexts. In e-Competency KVKS, the project combines Google Forms, Google Sheets and Looker Studio to help college administrators access lecturer competency data faster, in a structured and evidence-based way.')) ?></p>
    <div class="profile-mantra">
     <div><h2><?= e(tr('Trek Projek','Project Track')) ?></h2><p><?= e(tr('Pengalaman merentas sistem, aplikasi dan data.','Experience across systems, apps and data.')) ?></p></div>
