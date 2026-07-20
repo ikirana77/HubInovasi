@@ -225,6 +225,8 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
     const adaptiveCategoryPanels = Array.from(submissionForm.querySelectorAll('[data-adaptive-category]'));
     const adaptiveCategoryEmpty = submissionForm.querySelector('[data-adaptive-category-empty]');
     let currentStep = Math.max(1, Math.min(8, Number(submissionForm.dataset.initialStep) || 1));
+    let repeatableIndex = Date.now();
+    let personIndex = Date.now();
 
     const syncAdaptiveCategory = () => {
         const selectedCategory = categorySelect instanceof HTMLSelectElement ? categorySelect.value : '';
@@ -257,6 +259,59 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
             const field = submissionForm.elements.namedItem(fieldName);
             output.textContent = field && !(field instanceof RadioNodeList) ? String(field.value || '').trim() || '—' : '—';
         });
+        const repeatableReview = {
+            metric: (row) => {
+                const label = row.querySelector('[data-repeatable-field="label"]')?.value.trim() || '';
+                const value = row.querySelector('[data-repeatable-field="value"]')?.value.trim() || row.querySelector('[data-repeatable-field="target"]')?.value.trim() || '';
+                return label ? `${label}${value ? `: ${value}` : ''}` : '';
+            },
+            evidence: (row) => {
+                const title = row.querySelector('[data-repeatable-field="title"]')?.value.trim() || '';
+                const url = row.querySelector('[data-repeatable-field="url"]')?.value.trim() || '';
+                return title ? `${title}${url ? ` — ${url}` : ''}` : '';
+            },
+            recognition: (row) => row.querySelector('[data-repeatable-field="title"]')?.value.trim() || '',
+        };
+        Object.entries(repeatableReview).forEach(([kind, formatRow]) => {
+            const output = document.querySelector(`[data-review-repeatable="${kind}"]`);
+            if (!output) return;
+            output.replaceChildren();
+            const values = Array.from(submissionForm.querySelectorAll(`[data-repeatable-row="${kind}"]`)).map(formatRow).filter(Boolean);
+            values.forEach((value) => {
+                const item = document.createElement('li');
+                item.textContent = value;
+                output.append(item);
+            });
+            if (!values.length) {
+                const item = document.createElement('li');
+                item.textContent = '—';
+                output.append(item);
+            }
+        });
+        document.querySelectorAll('[data-review-people]').forEach((output) => {
+            const kind = output.dataset.reviewPeople;
+            output.replaceChildren();
+            const values = Array.from(submissionForm.querySelectorAll(`[data-person-row="${kind}"]`)).map((row) => {
+                const value = (suffix) => row.querySelector(`[name$="[${suffix}]"]`)?.value.trim() || '';
+                const name = value('full_name');
+                if (!name) return '';
+                if (kind === 'student') {
+                    const leader = row.querySelector('[data-team-leader]')?.checked ? `${submissionForm.dataset.leaderLabel || 'Leader'}: ` : '';
+                    return `${leader}${name} — ${value('class_name')} — ${value('role_title')}`;
+                }
+                return `${name} — ${value('position_title')} — ${value('role_title')}`;
+            }).filter(Boolean);
+            values.forEach((value) => {
+                const item = document.createElement('li');
+                item.textContent = value;
+                output.append(item);
+            });
+            if (!values.length) {
+                const item = document.createElement('li');
+                item.textContent = '—';
+                output.append(item);
+            }
+        });
         syncAdaptiveCategory();
     };
 
@@ -281,9 +336,44 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
         }
     };
 
+    const validateImpactCollections = () => {
+        const hasMetric = Array.from(submissionForm.querySelectorAll('[data-repeatable-row="metric"]')).some((row) => {
+            const label = row.querySelector('[data-repeatable-field="label"]')?.value.trim();
+            const value = row.querySelector('[data-repeatable-field="value"]')?.value.trim();
+            const target = row.querySelector('[data-repeatable-field="target"]')?.value.trim();
+            return label && (value || target);
+        });
+        const hasEvidence = Array.from(submissionForm.querySelectorAll('[data-repeatable-row="evidence"]')).some((row) => {
+            const title = row.querySelector('[data-repeatable-field="title"]')?.value.trim();
+            const url = row.querySelector('[data-repeatable-field="url"]')?.value.trim();
+            return title && url;
+        });
+        return Boolean(hasMetric && hasEvidence);
+    };
+
+    const validateParticipants = () => submissionForm.querySelectorAll('[data-person-row="student"]').length > 0;
+
     const validatePanel = (step) => {
         const panel = panels.find((item) => Number(item.dataset.submissionStep) === step);
         if (!panel) return true;
+        if (step === 4 && !validateImpactCollections()) {
+            showStep(step, true);
+            if (formMessage) {
+                formMessage.hidden = false;
+                formMessage.className = 'form-message form-message--error';
+                formMessage.textContent = submissionForm.dataset.impactMessage || 'Add an impact metric and evidence item.';
+            }
+            return false;
+        }
+        if (step === 5 && !validateParticipants()) {
+            showStep(step, true);
+            if (formMessage) {
+                formMessage.hidden = false;
+                formMessage.className = 'form-message form-message--error';
+                formMessage.textContent = submissionForm.dataset.participantMessage || 'Add at least one student.';
+            }
+            return false;
+        }
         const invalidField = Array.from(panel.querySelectorAll('input, select, textarea')).find((field) => !field.disabled && !field.checkValidity());
         if (!invalidField) return true;
         showStep(step, true);
@@ -301,16 +391,91 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
         if (validatePanel(currentStep)) showStep(currentStep + 1, true);
     });
     reviewButton?.addEventListener('click', () => {
-        if (validatePanel(1) && validatePanel(2) && validatePanel(3)) showStep(8, true);
+        if (validatePanel(1) && validatePanel(2) && validatePanel(3) && validatePanel(4) && validatePanel(5)) showStep(8, true);
     });
     stepButtons.forEach((button) => button.addEventListener('click', () => showStep(Number(button.dataset.stepTarget), true)));
     submissionForm.querySelectorAll('[data-go-to-step]').forEach((button) => button.addEventListener('click', () => showStep(Number(button.dataset.goToStep), true)));
     if (categorySelect instanceof HTMLSelectElement) categorySelect.addEventListener('change', syncAdaptiveCategory);
+    submissionForm.querySelectorAll('[data-add-repeatable]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const kind = button.dataset.addRepeatable;
+            const template = submissionForm.querySelector(`[data-repeatable-template="${kind}"]`);
+            const list = submissionForm.querySelector(`[data-repeatable-list="${kind}"]`);
+            if (!(template instanceof HTMLTemplateElement) || !list || list.children.length >= 20) return;
+            const holder = document.createElement('div');
+            holder.innerHTML = template.innerHTML.replaceAll('__INDEX__', String(repeatableIndex++));
+            const row = holder.firstElementChild;
+            if (!row) return;
+            list.append(row);
+            row.querySelector('input, textarea, select')?.focus();
+        });
+    });
+    submissionForm.querySelectorAll('[data-add-person]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const kind = button.dataset.addPerson;
+            const template = submissionForm.querySelector(`[data-person-template="${kind}"]`);
+            const list = submissionForm.querySelector(`[data-person-list="${kind}"]`);
+            if (!(template instanceof HTMLTemplateElement) || !list || list.children.length >= 30) return;
+            const key = `${kind}-new-${personIndex++}`;
+            const holder = document.createElement('div');
+            holder.innerHTML = template.innerHTML.replaceAll('__KEY__', key);
+            const row = holder.firstElementChild;
+            if (!row) return;
+            list.append(row);
+            row.querySelector('input:not([type="hidden"]), textarea, select')?.focus();
+        });
+    });
+    submissionForm.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) return;
+        const removeButton = event.target.closest('[data-remove-repeatable]');
+        if (removeButton instanceof HTMLButtonElement) {
+            removeButton.closest('[data-repeatable-row]')?.remove();
+            return;
+        }
+        const removePerson = event.target.closest('[data-remove-person]');
+        if (removePerson instanceof HTMLButtonElement) {
+            removePerson.closest('[data-person-row]')?.remove();
+            return;
+        }
+        const moveButton = event.target.closest('[data-move-person]');
+        if (!(moveButton instanceof HTMLButtonElement)) return;
+        const row = moveButton.closest('[data-person-row]');
+        if (!row) return;
+        if (moveButton.dataset.movePerson === 'up' && row.previousElementSibling) row.parentElement?.insertBefore(row, row.previousElementSibling);
+        if (moveButton.dataset.movePerson === 'down' && row.nextElementSibling) row.parentElement?.insertBefore(row.nextElementSibling, row);
+    });
+    submissionForm.addEventListener('change', (event) => {
+        if (!(event.target instanceof HTMLInputElement)) return;
+        if (event.target.matches('[data-team-leader]') && event.target.checked) {
+            submissionForm.querySelectorAll('[data-team-leader]').forEach((checkbox) => {
+                if (checkbox !== event.target) checkbox.checked = false;
+            });
+            const row = event.target.closest('[data-person-row="student"]');
+            if (row) row.parentElement?.prepend(row);
+        }
+        if (!event.target.matches('[data-photo-input]') || !event.target.files?.[0]) return;
+        const file = event.target.files[0];
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+            event.target.setCustomValidity(submissionForm.dataset.participantMessage || 'Choose a valid JPG, PNG or WebP image under 5MB.');
+            event.target.reportValidity();
+            return;
+        }
+        event.target.setCustomValidity('');
+        const preview = event.target.closest('.profile-photo-editor')?.querySelector('[data-photo-preview]');
+        if (!preview) return;
+        if (preview.dataset.objectUrl) URL.revokeObjectURL(preview.dataset.objectUrl);
+        const objectUrl = URL.createObjectURL(file);
+        preview.dataset.objectUrl = objectUrl;
+        const image = document.createElement('img');
+        image.src = objectUrl;
+        image.alt = '';
+        preview.replaceChildren(image);
+    });
 
     submissionForm.addEventListener('submit', (event) => {
         const submitter = event.submitter;
         if (!(submitter instanceof HTMLButtonElement) || submitter.value !== 'submit_review') return;
-        for (const step of [1, 2, 3, 8]) {
+        for (const step of [1, 2, 3, 4, 5, 8]) {
             if (!validatePanel(step)) {
                 event.preventDefault();
                 return;

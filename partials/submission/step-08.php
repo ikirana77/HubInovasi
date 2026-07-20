@@ -19,6 +19,17 @@
             </dl>
         <?php endforeach; ?>
     </div>
+    <div class="submission-review-impact">
+        <h2><?= e(tr('Impak, bukti dan pengiktirafan', 'Impact, evidence and recognition')) ?></h2>
+        <section><h3><?= e(tr('Metrik', 'Metrics')) ?></h3><ul data-review-repeatable="metric"><?php foreach ($impactDetails['metrics'] as $metric): ?><li><?= e($metric['label'] . ': ' . (($metric['value'] ?: $metric['target']) ?? '') . ($metric['unit'] ? ' ' . $metric['unit'] : '')) ?></li><?php endforeach; ?></ul></section>
+        <section><h3><?= e(tr('Bukti', 'Evidence')) ?></h3><ul data-review-repeatable="evidence"><?php foreach ($impactDetails['evidence'] as $item): ?><li><?= e($item['title'] . ($item['url'] ? ' — ' . $item['url'] : '')) ?></li><?php endforeach; ?></ul></section>
+        <section><h3><?= e(tr('Anugerah & pengiktirafan', 'Awards & recognitions')) ?></h3><ul data-review-repeatable="recognition"><?php foreach ($impactDetails['recognitions'] as $recognition): ?><li><?= e($recognition['title'] . ($recognition['level'] ? ' — ' . $recognition['level'] : '')) ?></li><?php endforeach; ?></ul></section>
+    </div>
+    <div class="submission-review-people">
+        <h2><?= e(tr('Peserta & mentor', 'Participants & mentors')) ?></h2>
+        <section><h3><?= e(tr('Pelajar', 'Students')) ?></h3><ul data-review-people="student"><?php foreach ($participantDetails['students'] as $student): ?><li><?= !empty($student['is_team_leader']) ? '<strong>' . e(tr('Ketua: ', 'Leader: ') . $student['full_name']) . '</strong>' : e($student['full_name']) ?> — <?= e($student['class_name'] ?? '') ?> — <?= e($student['role_title'] ?? '') ?></li><?php endforeach; ?></ul></section>
+        <section><h3><?= e(tr('Mentor', 'Mentors')) ?></h3><ul data-review-people="mentor"><?php foreach ($participantDetails['mentors'] as $mentor): ?><li><?= e($mentor['full_name']) ?> — <?= e($mentor['position_title'] ?? '') ?> — <?= e($mentor['role_title'] ?? '') ?></li><?php endforeach; ?></ul></section>
+    </div>
     <label class="form-check"><input type="checkbox" name="consent" required><span><?= e(tr('Saya bersetuju maklumat ini disimpan sebagai submission dan disemak oleh admin HubInovasi.', 'I agree that this information may be stored as a submission and reviewed by the HubInovasi administrator.')) ?> <em>*</em></span></label>
     <button class="button button--primary submission-submit" type="submit" name="intent" value="submit_review"><?= e(tr('Hantar untuk Semakan', 'Submit for Review')) ?></button>
 </fieldset>

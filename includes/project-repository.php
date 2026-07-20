@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/taxonomy.php';
+require_once __DIR__ . '/submission-participants.php';
 
 function decode_list(?string $json): array
 {
@@ -53,6 +54,7 @@ function project_row_to_view(array $row): array
         'technology_stack' => decode_list($row['technology_details']),
         'journey_milestones' => decode_list($row['project_journey']),
         'team' => [],
+        'submission_people' => ['students' => [], 'mentors' => []],
         'collaborators' => [],
         'links' => [],
         'assets' => [],
@@ -127,6 +129,14 @@ function get_public_project_by_slug(string $slug): ?array
         }, $collaborators->fetchAll());
     } catch (Throwable $exception) {
         $project['collaborators'] = [];
+    }
+    try {
+        $submissionStatement = db()->prepare("SELECT id FROM submissions WHERE linked_project_id = ? AND status = 'published' ORDER BY reviewed_at DESC, id DESC LIMIT 1");
+        $submissionStatement->execute([$project['id']]);
+        $submissionId = (int) ($submissionStatement->fetchColumn() ?: 0);
+        if ($submissionId) $project['submission_people'] = submission_participants_for_submission($submissionId);
+    } catch (Throwable $exception) {
+        // CP10D is optional for projects published before the migration.
     }
     return $project;
 }

@@ -857,6 +857,53 @@ button, input, select, textarea { font-family: 'Inter', Arial, sans-serif !impor
 .adaptive-category-panel header h2, .submission-review-adaptive h2 { margin: 0; font: 700 1.25rem 'Space Grotesk', sans-serif; }
 .submission-review-adaptive { margin-top: 30px; }
 .submission-review-adaptive > h2 { margin-bottom: 14px; }
+.repeatable-section { margin-top: 30px; padding-top: 28px; border-top: var(--line); }
+.repeatable-section > header { display: flex; justify-content: space-between; gap: 24px; align-items: start; margin-bottom: 18px; }
+.repeatable-section > header h2 { margin: 0; font: 700 1.25rem 'Space Grotesk', sans-serif; }
+.repeatable-section > header p:last-child { margin: 6px 0 0; color: #68635e; font-size: .88rem; }
+.repeatable-list { display: grid; gap: 16px; }
+.repeatable-row { display: grid; gap: 16px; padding: 20px; background: #faf8f4; border: 1px solid #d7d1ca; border-radius: 8px; }
+.repeatable-row__heading { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #dfdad3; }
+.repeatable-row__heading button { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid #d1c9c1; border-radius: 50%; background: white; color: #8a3636; font-size: 1.3rem; cursor: pointer; }
+.repeatable-row__heading button:hover, .repeatable-row__heading button:focus-visible { border-color: #8a3636; background: #fff0ed; }
+.submission-review-impact { margin: 30px 0 24px; }
+.submission-review-impact > h2 { margin: 0 0 14px; font: 700 1.25rem 'Space Grotesk', sans-serif; }
+.submission-review-impact { display: grid; gap: 12px; }
+.submission-review-impact section { padding: 16px 18px; border: var(--line); border-radius: 8px; }
+.submission-review-impact h3 { margin: 0; font: 700 1rem 'Space Grotesk', sans-serif; }
+.submission-review-impact ul { margin: 10px 0 0; padding-left: 20px; }
+.people-editor { margin-top: 30px; padding-top: 28px; border-top: var(--line); }
+.people-editor > header { display: flex; justify-content: space-between; gap: 24px; align-items: start; margin-bottom: 18px; }
+.people-editor > header h2 { margin: 0; font: 700 1.25rem 'Space Grotesk', sans-serif; }
+.people-editor > header p:last-child { margin: 6px 0 0; color: #68635e; font-size: .88rem; }
+.people-editor__list { display: grid; gap: 18px; }
+.person-editor-card { overflow: hidden; border: 1px solid #d7d1ca; border-radius: 9px; background: #faf8f4; }
+.person-editor-card__toolbar { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; background: #eee9e3; border-bottom: 1px solid #d7d1ca; }
+.person-editor-card__toolbar > div { display: flex; gap: 7px; }
+.person-editor-card__toolbar button { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid #c8c0b8; border-radius: 50%; background: white; cursor: pointer; }
+.person-editor-card__toolbar button:last-child { color: #8a3636; font-size: 1.2rem; }
+.person-editor-card__layout { display: grid; grid-template-columns: 180px 1fr; gap: 24px; padding: 20px; }
+.person-editor-card__fields { display: grid; gap: 16px; }
+.profile-photo-editor { display: grid; gap: 12px; align-content: start; }
+.profile-photo-editor__preview { overflow: hidden; display: grid; place-items: center; width: 150px; max-width: 100%; aspect-ratio: 1; border: 1px dashed #aaa198; border-radius: 10px; background: #eee9e3; color: #817970; font-size: 2rem; }
+.profile-photo-editor__preview img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.profile-photo-editor input[type="file"] { width: 100%; padding: 8px; font-size: .76rem; }
+.form-check--compact { padding: 10px 12px; font-size: .8rem; }
+.submission-review-people { display: grid; gap: 12px; margin: 30px 0 24px; }
+.submission-review-people > h2 { margin: 0; font: 700 1.25rem 'Space Grotesk', sans-serif; }
+.submission-review-people section { padding: 16px 18px; border: var(--line); border-radius: 8px; }
+.submission-review-people h3 { margin: 0; font: 700 1rem 'Space Grotesk', sans-serif; }
+.submission-review-people ul { margin: 10px 0 0; padding-left: 20px; }
+.published-people { display: grid; gap: 12px; margin-top: 18px; }
+.published-person { display: grid; grid-template-columns: 64px 1fr; gap: 14px; align-items: center; padding: 14px; border: 1px solid #ddd5cd; border-radius: 8px; background: #faf8f4; }
+.published-person:not(:has(img)) { grid-template-columns: 1fr; }
+.published-person--leader { border-color: var(--magenta); background: #fff4f9; }
+.published-person img { width: 64px; height: 64px; object-fit: cover; border-radius: 50%; }
+.published-person div { display: grid; gap: 3px; }
+.published-person div > span { color: var(--magenta); font-size: .68rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.published-person strong { font-size: .95rem; }
+.published-person small { color: #68635e; }
+.published-person p { margin: 2px 0 0; font-size: .84rem; }
 .submission-step :disabled { cursor: not-allowed; opacity: .62; }
 .person-shell { display: grid; grid-template-columns: 120px 1fr; gap: 22px; align-items: start; margin-bottom: 20px; padding: 20px; border: 1px dashed #b8b1aa; border-radius: 8px; }
 .person-shell__photo { display: grid; place-items: center; aspect-ratio: 1; background: #eee9e3; border-radius: 50%; color: #817970; font-size: 2rem; }
@@ -881,6 +928,9 @@ button, input, select, textarea { font-family: 'Inter', Arial, sans-serif !impor
     .submission-review div { grid-template-columns: 1fr; gap: 4px; }
     .adaptive-form-actions { align-items: stretch; flex-direction: column; }
     .adaptive-form-actions #submission-previous { margin-right: 0; }
+    .repeatable-section > header { align-items: stretch; flex-direction: column; }
+    .people-editor > header { align-items: stretch; flex-direction: column; }
+    .person-editor-card__layout { grid-template-columns: 1fr; }
 }
 
 /* CP05 — database workflow and admin review */
@@ -982,6 +1032,23 @@ button, input, select, textarea { font-family: 'Inter', Arial, sans-serif !impor
 .admin-adaptive-details div { padding-top: 14px; border-top: var(--line); }
 .admin-adaptive-details dt { color: #716b65; font-size: .72rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
 .admin-adaptive-details dd { margin: 5px 0 0; }
+.admin-impact-collections { display: grid; gap: 18px; margin-top: 18px; }
+.admin-impact-collections section { padding-top: 16px; border-top: var(--line); }
+.admin-impact-collections h3 { margin: 0; font: 700 1rem 'Space Grotesk', sans-serif; }
+.admin-impact-collections ul { margin: 10px 0 0; padding-left: 20px; }
+.admin-impact-collections li + li { margin-top: 10px; }
+.admin-impact-collections li small { display: block; margin-top: 3px; }
+.admin-people-review { margin-bottom: 24px; padding: 24px; background: white; border: var(--line); border-radius: 9px; }
+.admin-people-review h2 { margin: 0 0 16px; font: 700 1.35rem 'Space Grotesk', sans-serif; }
+.admin-people-review > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.admin-people-review article { display: grid; grid-template-columns: 58px 1fr; gap: 12px; align-items: center; padding: 12px; background: #faf8f4; border: 1px solid #ddd5cd; border-radius: 8px; }
+.admin-people-review article:not(:has(img)) { grid-template-columns: 1fr; }
+.admin-people-review img { width: 58px; height: 58px; object-fit: cover; border-radius: 50%; }
+.admin-people-review p { display: grid; gap: 2px; margin: 0; }
+.admin-people-review p span { color: var(--magenta); font-size: .68rem; font-weight: 700; text-transform: uppercase; }
+.admin-people-review p small { color: #68635e; }
+.admin-people-review p em { font-size: .82rem; font-style: normal; }
+@media (max-width: 640px) { .admin-people-review > div { grid-template-columns: 1fr; } }
 .admin-review-sidebar { display: grid; gap: 20px; position: sticky; top: 20px; }
 .admin-review-sidebar > section { padding: 25px; background: white; border: var(--line); border-radius: 9px; }
 .admin-review-sidebar h2 { margin: 0 0 18px; font: 700 1.55rem 'Space Grotesk',sans-serif; }
