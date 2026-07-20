@@ -14,4 +14,3 @@ deployment:
     - /bin/cp -R scripts $DEPLOYPATH
     - /bin/cp -R uploads $DEPLOYPATH
     - /bin/cp *.php $DEPLOYPATH
-    - /bin/cp .htaccess $DEPLOYPATH
