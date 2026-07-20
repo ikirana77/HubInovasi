@@ -64,10 +64,9 @@ $trendingProjects = [
 $solutionAreas = hub_solution_areas();
 
 $innovators = [
-    ['name' => 'Aiman Hakimi', 'role' => tr('Pengasas & Pembangun', 'Founder & Developer'), 'project' => 'SPARK', 'bio' => tr('Membina penyelesaian pintar yang menggerakkan kampus ke hadapan.', 'Building smart solutions that move campuses forward.'), 'image' => 'innovator-aiman.webp'],
-    ['name' => 'Nur Syazwanie', 'role' => tr('Jurutera AI/ML', 'AI/ML Engineer'), 'project' => 'Durian Radar', 'bio' => tr('Mengubah data menjadi impak sebenar untuk petani dan komuniti.', 'Turning data into real impact for farmers and communities.'), 'image' => 'innovator-syazwanie.webp'],
-    ['name' => 'Jason Lee', 'role' => tr('Pembangun Full Stack', 'Full Stack Developer'), 'project' => 'CMS Quest', 'bio' => tr('Mencipta pengalaman digital yang disukai pelajar.', 'Creating digital experiences that students love.'), 'image' => 'innovator-jason.webp'],
-    ['name' => 'Vania Chong', 'role' => tr('Pereka Produk', 'Product Designer'), 'project' => 'HERS', 'bio' => tr('Mereka pengalaman pembelajaran yang memperkasa pelajar.', 'Designing learning experiences that empower students.'), 'image' => 'innovator-vania.webp'],
+    ['name' => 'Muhammad Aidil Wafiy', 'role' => tr('UI/UX Designer & Student Developer', 'UI/UX Designer & Student Developer'), 'project' => 'SPARK', 'bio' => tr('Membangunkan pengalaman aplikasi SPARK melalui reka bentuk antaramuka, sistem data dan pembangunan aplikasi.', 'Developing the SPARK app experience through interface design, data systems and application development.'), 'image' => 'innovator-aidil-wafiy.webp'],
+    ['name' => 'Anniq Darwisy', 'role' => tr('Student Developer & Website Designer', 'Student Developer & Website Designer'), 'project' => 'SPARK', 'bio' => tr('Menyumbang kepada reka bentuk website, fungsi sistem dan kerjasama pasukan SPARK.', 'Contributes to website design, system functions and SPARK team collaboration.'), 'image' => 'innovator-anniq-darwisy.webp'],
+    ['name' => 'Khadijah Hanum', 'role' => tr('Multi-Project Innovator', 'Multi-Project Innovator'), 'project' => 'e-Competency KVKS · Durian Radar · HERS', 'bio' => tr('Menyumbang kepada pembangunan sistem, data dan aplikasi merentas beberapa projek inovasi.', 'Contributes to system, data and application development across several innovation projects.'), 'image' => 'innovator-khadijah-hanum.webp'],
 ];
 
 require __DIR__ . '/includes/header.php';
