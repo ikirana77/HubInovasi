@@ -59,6 +59,24 @@ $innovators = [
         'stat' => ['Web', tr('Fokus','Focus')],
         'featured' => false,
     ],
+
+    [
+        'name' => 'Nur Damia Atiqah',
+        'full' => 'Nur Damia Atiqah binti Anwar Sadat',
+        'role' => tr('Inovator CAReS', 'CAReS Innovator'),
+        'project' => 'CAReS',
+        'class' => 'KVKS',
+        'image' => 'assets/images/home/innovator-damia-atiqah.webp',
+        'url' => 'innovator-damia-atiqah.php',
+        'bio' => tr(
+            'Ahli pasukan inovasi CAReS yang membantu membina sistem pelaporan aktiviti kolej yang lebih tersusun, mudah disemak dan bersedia sebagai eviden pertandingan.',
+            'A CAReS innovation team member helping build a clearer college activity reporting system for review, evidence and competition readiness.'
+        ),
+        'skills' => ['Pelaporan Aktiviti', 'Dokumentasi', 'UI/UX'],
+        'tags' => ['CAReS', 'IIE2025 Gold Award'],
+        'stat' => ['Gold', 'IIE2025'],
+        'featured' => false,
+    ],
 ];
 
 $featured = array_values(array_filter($innovators, fn($x) => !empty($x['featured'])));
