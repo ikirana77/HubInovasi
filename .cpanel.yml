@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/wafiyjameel/inovasi.ekvks.com/
+    - /bin/rsync -av --delete --exclude='.git' --exclude='.cpanel.yml' --exclude='config/local.php' --exclude='.DS_Store' ./ $DEPLOYPATH
