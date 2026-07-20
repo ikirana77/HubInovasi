@@ -2,4 +2,16 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/wafiyjameel/inovasi.ekvks.com/
-    - /bin/rsync -av --delete --exclude='.git' --exclude='.cpanel.yml' --exclude='config/local.php' --exclude='.DS_Store' ./ $DEPLOYPATH
+    - /bin/cp -R admin $DEPLOYPATH
+    - /bin/cp -R assets $DEPLOYPATH
+    - /bin/cp -R auth $DEPLOYPATH
+    - /bin/cp -R config $DEPLOYPATH
+    - /bin/cp -R data $DEPLOYPATH
+    - /bin/cp -R database $DEPLOYPATH
+    - /bin/cp -R dashboard $DEPLOYPATH
+    - /bin/cp -R includes $DEPLOYPATH
+    - /bin/cp -R lang $DEPLOYPATH
+    - /bin/cp -R scripts $DEPLOYPATH
+    - /bin/cp -R uploads $DEPLOYPATH
+    - /bin/cp *.php $DEPLOYPATH
+    - /bin/cp .htaccess $DEPLOYPATH
