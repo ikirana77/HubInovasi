@@ -1,14 +1,112 @@
 <?php
-require_once __DIR__.'/includes/bootstrap.php';require_once __DIR__.'/includes/public-ui.php';
-$pageTitle=tr('Profil Inovator','Innovator Profile');$activePage='innovators';enable_public_mockup('mockup-innovator');
-$featured=[['hers','HERS',tr('Sistem sokongan pendidikan dan rekod yang dibina untuk keperluan sebenar.','Education support and recording system built for real needs.')],['durian-radar','Durian Radar',tr('Cerapan tanaman dan komuniti berasaskan data.','Data-driven crop and community insight.')],['spark','SPARK',tr('Penyelesaian pintar untuk pengalaman kampus yang lancar.','Smart solution for a seamless campus experience.')]];
+require_once __DIR__.'/includes/bootstrap.php';
+require_once __DIR__.'/includes/public-ui.php';
+
+$pageTitle = 'Muhammad Aidil Wafiy | '.tr('Innovator SPARK','SPARK Innovator');
+$activePage = 'innovators';
+enable_public_mockup('mockup-profile');
+
 require __DIR__.'/includes/header.php';
 ?>
 <main id="main-content" class="pm-shell"><div class="container">
- <nav class="pm-breadcrumbs"><a href="index.php"><?= e(tr('Utama','Home')) ?></a><span>›</span><a href="innovator.php"><strong><?= e(tr('Inovator','Innovators')) ?></strong></a><span>›</span><span>Aiman Haziq</span></nav>
- <section class="profile-top"><div class="profile-portrait"><img src="assets/images/home/innovator-aiman.webp" alt="Aiman Haziq"></div><div class="profile-copy"><span class="pm-kicker"><?= e(tr('INOVATOR','INNOVATOR')) ?></span><h1>Aiman Haziq</h1><p><strong class="profile-role"><?= e(tr('Ketua Projek','Project Leader')) ?></strong> · <?= e(tr('Diploma Teknologi Maklumat','Diploma in Information Technology')) ?></p><blockquote class="profile-quote"><?= e(tr('Saya suka mengubah idea menjadi penyelesaian yang menjadikan kehidupan lebih baik untuk manusia sebenar.','I love turning ideas into solutions that make life better for real people.')) ?></blockquote><div class="detail-meta"><span>♢ Diploma IT</span><span>▣ <?= e(tr('Tahun 2','Year 2')) ?></span><span>⌖ KVKS</span><span>♙ Team Alpha</span></div></div><aside><div class="profile-facts"><?php foreach([['rocket','5',tr('Projek','Projects')],['award','3',tr('Anugerah','Awards')],['people','2',tr('Pertandingan','Competitions')],['chart','1.2K+',tr('Paparan Profil','Profile Views')]] as $x): ?><div class="pm-card"><span class="pm-icon" style="margin:auto;width:38px;height:38px"><?= ui_icon($x[0]) ?></span><strong><?= e($x[1]) ?></strong><span><?= e($x[2]) ?></span></div><?php endforeach; ?></div><div class="connect-card pm-card"><div><h2><?= e(tr('Mari berhubung','Let’s connect')) ?></h2><p><?= e(tr('Terbuka untuk kolaborasi, pertandingan dan membina penyelesaian bermakna.','Open to collaboration, competitions and building meaningful solutions.')) ?></p></div><a class="pm-btn primary" href="about.php#contact"><?= e(tr('MESEJ','MESSAGE')) ?> ↗</a></div></aside></section>
- <section class="skill-row"><div class="skill-box"><h2><?= e(tr('KEMAHIRAN','SKILLS')) ?></h2><div class="skill-chips"><?php foreach(['Problem Solving','UI/UX Design','Flutter','Laravel','Firebase','Team Leadership','Python','IoT','Database Design','Agile','Public Speaking'] as $x): ?><span><?= e($x) ?></span><?php endforeach; ?></div></div><div class="skill-box"><h2><?= e(tr('TEKNOLOGI YANG DIGUNAKAN','TECHNOLOGIES I WORK WITH')) ?></h2><div class="skill-chips"><?php foreach(['Flutter','Laravel','Firebase','MySQL','Python','JavaScript','Figma'] as $x): ?><span><?= e($x) ?></span><?php endforeach; ?></div></div></section>
- <section class="profile-content"><div class="project-showcase pm-card"><div class="pm-section-title"><h2><?= e(tr('PROJEK PILIHAN','FEATURED PROJECTS')) ?></h2><a href="explore.php"><?= e(tr('Lihat semua projek','View all projects')) ?> →</a></div><div class="mini-projects"><?php foreach($featured as $p): ?><article class="mini-project pm-card"><img src="<?= e(project_image($p[0])) ?>" alt="<?= e($p[1]) ?>"><div><h3><?= e($p[1]) ?></h3><p><?= e($p[2]) ?></p><ul class="pm-tags"><li>Innovation</li><li>KVKS</li></ul></div></article><?php endforeach; ?></div></div><aside class="achievement-list pm-card"><div class="pm-section-title"><h2><?= e(tr('PENCAPAIAN','ACHIEVEMENTS')) ?></h2></div><ul><?php foreach([[tr('Anugerah Inovasi Terbaik','Best Innovation Award'),'Innovation Fest 2026','Sep 2026'],[tr('5 Finalis Terbaik','Top 5 Finalist'),'TVET Innovation Challenge','Oct 2026'],[tr('Anugerah Dekan','Dean’s Award'),tr('Kecemerlangan Akademik','Academic Excellence'),'May 2025'],[tr('Sijil Penyertaan','Certificate of Participation'),'ASEAN Youth Innovation Summit','Nov 2025']] as $x): ?><li><span class="pm-icon" style="width:34px;height:34px"><?= ui_icon('award') ?></span><div><strong><?= e($x[0]) ?></strong><br><?= e($x[1]) ?></div><time><?= e($x[2]) ?></time></li><?php endforeach; ?></ul></aside></section>
- <section class="profile-mantra pm-card"><div><h2>“<?= e(tr('Inovasi bukan hanya tentang teknologi, tetapi tentang manusia, tujuan dan impak.','Innovation is not just about technology, it’s about people, purpose and impact.')) ?>”</h2></div><?php foreach([['heart',tr('Utamakan Manusia','People First')],['bulb',tr('Terus Belajar','Keep Learning')],['rocket',tr('Ambil Tindakan','Take Action')],['people',tr('Lebih Kuat Bersama','Stronger Together')]] as $x): ?><div><span class="pm-icon"><?= ui_icon($x[0]) ?></span><strong><?= e($x[1]) ?></strong><p><?= e(tr('Idea menjadi impak melalui tindakan.','Ideas become impact through action.')) ?></p></div><?php endforeach; ?></section>
+ <nav class="pm-breadcrumbs">
+  <a href="index.php"><?= e(tr('Utama','Home')) ?></a>
+  <span>›</span>
+  <a href="index.php#innovators"><?= e(tr('Inovator','Innovators')) ?></a>
+  <span>›</span>
+  <strong>Muhammad Aidil Wafiy</strong>
+ </nav>
+
+ <section class="profile-top">
+  <div>
+   <div class="profile-portrait">
+    <img src="assets/images/home/innovator-aidil-wafiy.webp" alt="Potret Muhammad Aidil Wafiy bin Mohd Adli, innovator pelajar projek SPARK">
+   </div>
+   <div class="detail-actions" style="margin-top:12px">
+    <a class="pm-btn primary" href="project.php?slug=spark"><?= e(tr('Lihat Projek SPARK','View SPARK Project')) ?> ↗</a>
+    <a class="pm-btn" href="#skills"><?= e(tr('Kemahiran','Skills')) ?> ↓</a>
+   </div>
+  </div>
+
+  <div class="profile-copy">
+   <span class="pm-kicker"><?= e(tr('INOVATOR PELAJAR','STUDENT INNOVATOR')) ?></span>
+   <h1>Muhammad Aidil Wafiy bin Mohd Adli</h1>
+   <p><strong class="profile-role">UI/UX Designer & Student Developer</strong> · 2DVM KPD</p>
+   <blockquote class="profile-quote"><?= e(tr('Saya mahu membina aplikasi yang bukan sahaja berfungsi, tetapi mudah difahami dan membantu pengguna menyelesaikan masalah sebenar.','I want to build applications that do not only work, but are easy to understand and help users solve real problems.')) ?></blockquote>
+   <div class="detail-meta">
+    <span>▣ 2DVM KPD</span>
+    <span>♢ SPARK</span>
+    <span>⌖ KVKS</span>
+    <span>↗ UI/UX + Development</span>
+   </div>
+  </div>
+
+  <aside>
+   <div class="profile-facts">
+    <?php foreach([['rocket','SPARK',tr('Projek','Project')],['book','2DVM',tr('Kelas','Class')],['target','UI/UX',tr('Fokus','Focus')],['chart','SDLC',tr('Proses','Process')]] as $x): ?>
+     <div class="pm-card"><span class="pm-icon" style="margin:auto;width:38px;height:38px"><?= ui_icon($x[0]) ?></span><strong><?= e($x[1]) ?></strong><span><?= e($x[2]) ?></span></div>
+    <?php endforeach; ?>
+   </div>
+   <div class="connect-card pm-card">
+    <div>
+     <h2><?= e(tr('Innovator SPARK','SPARK Innovator')) ?></h2>
+     <p><?= e(tr('Membangunkan pengalaman aplikasi asrama digital melalui reka bentuk antaramuka, sistem data dan pembangunan aplikasi.','Developing a digital hostel app experience through interface design, data systems and application development.')) ?></p>
+    </div>
+    <a class="pm-btn primary" href="project.php?slug=spark"><?= e(tr('PROJEK','PROJECT')) ?> ↗</a>
+   </div>
+  </aside>
+ </section>
+
+ <section class="profile-content">
+  <article class="project-showcase pm-card">
+   <div class="pm-section-title"><h2><?= e(tr('Profil Ringkas','Profile Summary')) ?></h2></div>
+   <p><?= e(tr('Muhammad Aidil Wafiy bin Mohd Adli ialah pelajar 2DVM KPD yang terlibat dalam pembangunan projek SPARK, sebuah aplikasi pengurusan keluar masuk pelajar asrama berasaskan sistem digital. Beliau memberi fokus kepada reka bentuk antaramuka, pengalaman pengguna dan pembangunan fungsi aplikasi supaya sistem lebih mudah digunakan, tersusun dan sesuai dengan keperluan pengguna sebenar di persekitaran kolej.','Muhammad Aidil Wafiy bin Mohd Adli is a 2DVM KPD student involved in developing SPARK, a digital hostel student movement management application. His focus includes interface design, user experience and application functionality so the system is easier to use, structured and suitable for real users in a college environment.')) ?></p>
+   <p><?= e(tr('Sebagai innovator pelajar, Aidil Wafiy menunjukkan kekuatan dalam menggabungkan reka bentuk antaramuka dengan pembangunan sistem. Beliau bukan sahaja memberi perhatian kepada fungsi aplikasi, tetapi juga kepada cara pengguna berinteraksi dengan sistem supaya pengalaman penggunaan menjadi lebih jelas, kemas dan praktikal.','As a student innovator, Aidil Wafiy shows strength in combining interface design with system development. He pays attention not only to application functionality, but also to how users interact with the system so the overall experience becomes clearer, cleaner and more practical.')) ?></p>
+   <div class="profile-mantra">
+    <div><h2><?= e(tr('Fokus Pembangunan','Development Focus')) ?></h2><p><?= e(tr('Daripada idea kepada sistem yang boleh digunakan.','From idea to usable system.')) ?></p></div>
+    <div><strong>UI/UX</strong><p><?= e(tr('Reka bentuk pengalaman pengguna','User experience design')) ?></p></div>
+    <div><strong>Database</strong><p><?= e(tr('SQL dan pengurusan data','SQL and data management')) ?></p></div>
+    <div><strong>Mobile</strong><p>Flutter & Dart</p></div>
+    <div><strong>AI</strong><p><?= e(tr('Eksplorasi teknologi pintar','Smart technology exploration')) ?></p></div>
+   </div>
+  </article>
+
+  <aside class="achievement-list pm-card">
+   <div class="pm-section-title"><h2><?= e(tr('Peranan Dalam SPARK','Role in SPARK')) ?></h2></div>
+   <ul>
+    <?php foreach([[tr('Mereka bentuk antaramuka aplikasi','Designing application interfaces'),'UI/UX'],[tr('Menyusun aliran pengguna dan fungsi sistem','Structuring user flow and system functions'),'SDLC'],[tr('Membangunkan komponen sistem dan data','Developing system and data components'),'PHP/SQL'],[tr('Menggunakan tool pembangunan moden','Using modern development tools'),'Codex/VS Code'],[tr('Menyokong prototaip aplikasi mudah alih','Supporting mobile app prototype'),'Flutter/Dart']] as $x): ?>
+     <li><span class="pm-icon" style="width:32px;height:32px"><?= ui_icon('award') ?></span><strong><?= e($x[0]) ?></strong><time><?= e($x[1]) ?></time></li>
+    <?php endforeach; ?>
+   </ul>
+  </aside>
+ </section>
+
+ <section class="skill-row" id="skills">
+  <div class="skill-box pm-card">
+   <h2><?= e(tr('Kemahiran','Skills')) ?></h2>
+   <div class="skill-chips">
+    <?php foreach(['UI/UX Design','Figma','SQL','PHP','Java','JavaScript','HTML5/CSS','AI','Supabase','SDLC'] as $skill): ?>
+     <span><?= e($skill) ?></span>
+    <?php endforeach; ?>
+   </div>
+  </div>
+  <div class="skill-box pm-card">
+   <h2><?= e(tr('Teknologi Digunakan','Technologies Used')) ?></h2>
+   <div class="skill-chips">
+    <?php foreach(['Codex','HTML5/CSS','SQL','XAMPP','VS Code','NetBeans IDE','Flutter','Dart'] as $tech): ?>
+     <span><?= e($tech) ?></span>
+    <?php endforeach; ?>
+   </div>
+  </div>
+ </section>
+
+ <section class="pm-ribbon pm-card">
+  <div>
+   <h2><?= tr('SPARK membuktikan idea pelajar boleh menjadi <em style="color:var(--pm-pink);font-style:normal">produk digital sebenar.</em>','SPARK proves student ideas can become <em style="color:var(--pm-pink);font-style:normal">real digital products.</em>') ?></h2>
+   <p><?= e(tr('Teroka projek SPARK untuk melihat bagaimana penyelesaian asrama digital dibangunkan oleh pelajar KVKS.','Explore SPARK to see how a digital hostel solution is developed by KVKS students.')) ?></p>
+  </div>
+  <a class="pm-btn primary" href="project.php?slug=spark"><?= e(tr('Lihat SPARK','View SPARK')) ?> ↗</a>
+  <a class="pm-btn" href="mentor.php"><?= e(tr('Lihat Mentor','View Mentors')) ?> →</a>
+ </section>
 </div></main>
 <?php require __DIR__.'/includes/footer.php'; ?>
