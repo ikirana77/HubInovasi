@@ -700,3 +700,28 @@
     justify-self: start;
   }
 }
+
+/* CP innovators directory: separate project chips from skill chips */
+.innovator-directory .skill-chips + .mentor-project-strip {
+  margin-top: 18px !important;
+}
+
+.innovator-directory .mentor-project-strip {
+  gap: 9px !important;
+}
+
+.innovator-directory .mentor-project-strip b {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 8px 14px;
+  line-height: 1.15;
+}
+
+.innovator-directory .mentor-card .skill-chips {
+  margin-bottom: 16px;
+}
+
+.innovator-directory .mentor-card__bottom {
+  margin-top: 18px;
+}
