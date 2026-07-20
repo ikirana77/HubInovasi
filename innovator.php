@@ -8,6 +8,19 @@ enable_public_mockup('mockup-profile');
 
 $innovators = [
     [
+        'name' => 'Khadijah Hanum',
+        'full' => 'Khadijah Hanum binti Mohamad Nizam',
+        'class' => '2DVM KPD',
+        'role' => 'Multi-Project Innovator',
+        'project' => 'eKompetensi · Durian Radar · HERS',
+        'image' => 'assets/images/home/innovator-khadijah-hanum.webp',
+        'url' => 'innovator-khadijah-hanum.php',
+        'bio' => tr('Membangunkan pengalaman sistem merentas eKompetensi, Durian Radar dan HERS.', 'Builds system experience across eKompetensi, Durian Radar and HERS.'),
+        'skills' => ['System','Data','QR','Mobile','Teamwork'],
+        'stat' => ['3', tr('Projek','Projects')],
+        'featured' => true,
+    ],
+    [
         'name' => 'Muhammad Aidil Wafiy',
         'full' => 'Muhammad Aidil Wafiy bin Mohd Adli',
         'class' => '2DVM KPD',
