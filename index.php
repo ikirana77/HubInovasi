@@ -56,9 +56,6 @@ $trendingProjects = [
     ['slug' => 'hers', 'name' => 'HERS', 'description' => tr('Laluan pembelajaran diperibadikan untuk setiap pelajar.', 'Personalised learning pathways for every student.'), 'tags' => ['AI/ML', tr('Pendidikan', 'Education')], 'image' => 'project-hers.webp'],
     ['slug' => 'spark', 'name' => 'SPARK', 'description' => tr('Pembantu parkir pintar untuk pengalaman kampus yang lancar.', 'Smart parking assistant for a seamless campus experience.'), 'tags' => ['IoT', tr('Kampus Pintar', 'Smart Campus')], 'image' => 'project-spark.webp'],
     ['slug' => 'durian-radar', 'name' => 'Durian Radar', 'description' => tr('Cerapan AI untuk perancangan hasil durian yang lebih baik.', 'AI insights for better durian harvest planning.'), 'tags' => ['AI/ML', tr('Pertanian', 'Agriculture')], 'image' => 'project-durian-radar.webp'],
-    ['slug' => 'cms-quest', 'name' => 'CMS Quest', 'description' => tr('Chatbot pintar untuk perkhidmatan kampus dan sokongan pelajar.', 'Smart chatbot for campus services and student support.'), 'tags' => ['NLP', 'Chatbot'], 'image' => 'project-cms-quest.webp'],
-    ['slug' => 'ecotrack', 'name' => 'EcoTrack', 'description' => tr('Jejak, kurangkan dan laporkan jejak karbon kampus.', 'Track, reduce and report the campus carbon footprint.'), 'tags' => [tr('Kelestarian', 'Sustainability'), 'IoT'], 'image' => 'project-ecotrack.webp'],
-    ['slug' => 'medbuddy', 'name' => 'MedBuddy', 'description' => tr('Rakan kesihatan untuk kesejahteraan pelajar.', 'A health companion for student well-being.'), 'tags' => [tr('Kesihatan', 'Health'), tr('Mudah Alih', 'Mobile')], 'image' => 'project-medbuddy.webp'],
 ];
 
 $solutionAreas = hub_solution_areas();
@@ -72,7 +69,7 @@ $innovators = [
         'full' => 'Nur Nazlah Nazifa binti Mohd Ridzuan',
         'role' => tr('Inovator Pelbagai Projek', 'Multi-Project Innovator'),
         'project' => 'e-Competency KVKS · Durian Radar · HERS',
-        'image' => 'assets/images/home/innovator-nazlah-nazifa.webp',
+        'image' => 'innovator-nazlah-nazifa.webp',
         'url' => 'innovator-nazlah-nazifa.php',
         'bio' => tr(
             'Menyumbang kepada pembangunan sistem, data dan aplikasi merentas e-Competency KVKS, Durian Radar dan HERS.',
@@ -85,7 +82,7 @@ $innovators = [
         'full' => 'Nur Damia Atiqah binti Anwar Sadat',
         'role' => tr('Inovator CAReS', 'CAReS Innovator'),
         'project' => 'CAReS · IIE2025 Gold Award',
-        'image' => 'assets/images/home/innovator-damia-atiqah.webp',
+        'image' => 'innovator-damia-atiqah.webp',
         'url' => 'innovator-damia-atiqah.php',
         'bio' => tr(
             'Ahli pasukan inovasi CAReS yang membantu membina sistem pelaporan aktiviti kolej yang lebih tersusun dan bersedia sebagai eviden pertandingan.',
@@ -192,3 +189,6 @@ require __DIR__ . '/includes/header.php';
 </main>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>
+
+
+
