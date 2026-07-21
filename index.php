@@ -113,7 +113,7 @@ require __DIR__ . '/includes/header.php';
         <div class="container launchpad-hero__grid">
             <div class="launchpad-hero__copy">
                 <p class="launchpad-kicker"><?= e(tr('Platform Inovasi Pelajar', 'Student Innovation Launchpad')) ?></p>
-                <h1 id="launchpad-hero-title"><?= tr('Idea wajar mendapat<br><span>lebih daripada</span><br>sekadar folder penghantaran.', 'Ideas deserve<br><span>more than</span><br>a submission folder.') ?></h1>
+                <h1 id="launchpad-hero-title"><?= tr('Idea wajar mendapat<br><span>lebih daripada</span><br>sekadar penyertaan.', 'Ideas deserve<br><span>more than</span><br>a submission folder.') ?></h1>
                 <p><?= e(tr('Platform cerah yang mengubah projek pelajar menjadi kisah inovasi dan idea produk dunia sebenar.', 'A bright launchpad where student projects become real-world innovation stories and product ideas.')) ?></p>
                 <div class="launchpad-actions">
                     <a class="launchpad-button launchpad-button--primary" href="explore.php"><?= e(tr('Teroka Penyelesaian', 'Explore Solutions')) ?> <span aria-hidden="true">→</span></a>
