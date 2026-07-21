@@ -1,0 +1,182 @@
+<?php
+require_once __DIR__.'/includes/bootstrap.php';
+require_once __DIR__.'/includes/public-ui.php';
+
+$pageTitle = tr('Inovator HubInovasi','HubInovasi Innovators');
+$activePage = 'innovators';
+enable_public_mockup('mockup-profile');
+
+$innovators = [
+    [
+        'name' => 'Nazlah Nazifa',
+        'full' => 'Nur Nazlah Nazifa binti Mohd Ridzuan',
+        'class' => tr('Pasukan Pembangunan Pelajar','Student Development Team'),
+        'role' => tr('Inovator Pelbagai Projek','Multi-Project Innovator'),
+        'project' => 'e-Competency KVKS · Durian Radar · HERS',
+        'image' => 'assets/images/home/innovator-nazlah-nazifa.webp',
+        'url' => 'innovator-nazlah-nazifa.php',
+        'bio' => tr('Menyumbang kepada pembangunan sistem, data dan aplikasi merentas e-Competency KVKS, Durian Radar dan HERS.', 'Contributes to system, data and application development across e-Competency KVKS, Durian Radar and HERS.'),
+        'skills' => ['Dashboard','Data','Google Workspace','QR','Aplikasi Mudah Alih'],
+        'stat' => ['3', tr('Projek','Projects')],
+        'featured' => false,
+    ],
+    [
+        'name' => 'Alya Qausar',
+        'full' => 'Nur Alya Qausar binti Azhar',
+        'class' => tr('Pasukan Pembangunan Pelajar','Student Development Team'),
+        'role' => tr('Inovator Pelbagai Projek','Multi-Project Innovator'),
+        'project' => 'e-Competency KVKS · Durian Radar · HERS',
+        'image' => 'assets/images/home/innovator-qausar.webp',
+        'url' => 'innovator-qausar.php',
+        'bio' => tr('Menyumbang kepada pembangunan sistem, data dan aplikasi merentas e-Competency KVKS, Durian Radar dan HERS.', 'Contributes to system, data and application development across e-Competency KVKS, Durian Radar and HERS.'),
+        'skills' => ['Dashboard','Data','Google Workspace','QR','Aplikasi Mudah Alih'],
+        'stat' => ['3', tr('Projek','Projects')],
+        'featured' => false,
+    ],
+    [
+        'name' => 'Khadijah Hanum',
+        'full' => 'Khadijah Hanum binti Mohamad Nizam',
+        'class' => '2DVM KPD',
+        'role' => tr('Inovator Pelbagai Projek','Multi-Project Innovator'),
+        'project' => 'e-Competency KVKS · Durian Radar · HERS',
+        'image' => 'assets/images/home/innovator-khadijah-hanum.webp',
+        'url' => 'innovator-khadijah-hanum.php',
+        'bio' => tr('Menyumbang kepada e-Competency KVKS, Durian Radar dan HERS melalui pembangunan sistem, data dan aplikasi.', 'Contributes to e-Competency KVKS, Durian Radar and HERS through system, data and application development.'),
+        'skills' => ['Dashboard','Data','Google Workspace','QR','Aplikasi Mudah Alih'],
+        'stat' => ['3', tr('Projek','Projects')],
+        'featured' => true,
+    ],
+    [
+        'name' => 'Muhammad Aidil Wafiy',
+        'full' => 'Muhammad Aidil Wafiy bin Mohd Adli',
+        'class' => '2DVM KPD',
+        'role' => tr('Pereka UI/UX & Pembangun Pelajar','UI/UX Designer & Student Developer'),
+        'project' => 'SPARK',
+        'image' => 'assets/images/home/innovator-aidil-wafiy.webp',
+        'url' => 'innovator-aidil-wafiy.php',
+        'bio' => tr('Membangunkan pengalaman aplikasi SPARK melalui reka bentuk antaramuka, sistem data dan pembangunan aplikasi.', 'Developing the SPARK app experience through interface design, data systems and application development.'),
+        'skills' => ['UI/UX','Figma','SQL','PHP','Flutter'],
+        'stat' => ['SPARK', tr('Projek','Project')],
+        'featured' => true,
+    ],
+    [
+        'name' => 'Anniq Darwisy',
+        'full' => 'Anniq Darwisy bin Amrin',
+        'class' => '2DVM KPD',
+        'role' => tr('Pembangun Pelajar & Pereka Website','Student Developer & Website Designer'),
+        'project' => 'SPARK',
+        'image' => 'assets/images/home/innovator-anniq-darwisy.webp',
+        'url' => 'innovator-annic-darwisy.php',
+        'bio' => tr('Menyumbang kepada reka bentuk website, fungsi sistem dan kerjasama pasukan SPARK.', 'Contributes to website design, system functions and SPARK team collaboration.'),
+        'skills' => ['HTML','CSS','JavaScript','PHP','MySQL'],
+        'stat' => ['Web', tr('Fokus','Focus')],
+        'featured' => false,
+    ],
+
+    [
+        'name' => 'Nur Damia Atiqah',
+        'full' => 'Nur Damia Atiqah binti Anwar Sadat',
+        'role' => tr('Inovator CAReS', 'CAReS Innovator'),
+        'project' => 'CAReS',
+        'class' => 'KVKS',
+        'image' => 'assets/images/home/innovator-damia-atiqah.webp',
+        'url' => 'innovator-damia-atiqah.php',
+        'bio' => tr(
+            'Ahli pasukan inovasi CAReS yang membantu membina sistem pelaporan aktiviti kolej yang lebih tersusun, mudah disemak dan bersedia sebagai eviden pertandingan.',
+            'A CAReS innovation team member helping build a clearer college activity reporting system for review, evidence and competition readiness.'
+        ),
+        'skills' => ['Pelaporan Aktiviti', 'Dokumentasi', 'UI/UX'],
+        'tags' => ['CAReS', 'IIE2025 Gold Award'],
+        'stat' => ['Gold', 'IIE2025'],
+        'featured' => false,
+    ],
+];
+
+$featured = array_values(array_filter($innovators, fn($x) => !empty($x['featured'])));
+$others = array_values(array_filter($innovators, fn($x) => empty($x['featured'])));
+
+require __DIR__.'/includes/header.php';
+?>
+<main id="main-content" class="pm-shell innovator-directory"><div class="container">
+ <nav class="pm-breadcrumbs">
+  <a href="index.php"><?= e(tr('Utama','Home')) ?></a>
+  <span>›</span>
+  <strong><?= e(tr('Inovator','Innovators')) ?></strong>
+ </nav>
+
+ <section class="mentor-directory-hero">
+  <div>
+   <span class="pm-kicker"><?= e(tr('HUBINOVASI INNOVATORS','HUBINOVASI INNOVATORS')) ?></span>
+   <h1 class="pm-display"><?= tr('Kenali inovator pelajar yang membina <em>penyelesaian digital sebenar.</em>','Meet the student innovators building <em>real digital solutions.</em>') ?></h1>
+   <p class="pm-lead"><?= e(tr('Teroka profil pelajar, projek, kemahiran dan teknologi yang digunakan dalam pembangunan inovasi KVKS.', 'Explore student profiles, projects, skills and technologies used in KVKS innovation development.')) ?></p>
+  </div>
+  <aside class="mentor-directory-stats pm-card">
+   <div><strong><?= count($innovators) ?></strong><span><?= e(tr('Inovator Dipaparkan','Innovators Showcased')) ?></span></div>
+   <div><strong>2+</strong><span><?= e(tr('Projek SPARK','SPARK Innovators')) ?></span></div>
+   <div><strong>10+</strong><span><?= e(tr('Kemahiran Teknikal','Technical Skills')) ?></span></div>
+  </aside>
+ </section>
+
+ <section class="mentor-filter pm-card">
+  <input type="search" placeholder="<?= e(tr('Cari nama innovator, projek atau kemahiran...', 'Search innovator name, project or skill...')) ?>">
+  <div>
+   <?php foreach(['SPARK','UI/UX','PHP','MySQL','Flutter','JavaScript'] as $tag): ?>
+    <span><?= e($tag) ?></span>
+   <?php endforeach; ?>
+  </div>
+ </section>
+
+ <section class="mentor-featured">
+  <div class="pm-section-title"><h2><?= e(tr('Inovator Pilihan','Featured Innovator')) ?></h2></div>
+  <?php foreach($featured as $x): ?>
+   <article class="mentor-featured-card pm-card">
+    <img src="<?= e($x['image']) ?>" alt="<?= e('Potret '.$x['full']) ?>">
+    <div>
+     <span class="pm-kicker"><?= e(tr('INOVATOR PILIHAN','FEATURED INNOVATOR')) ?></span>
+     <h2><?= e($x['name']) ?></h2>
+     <p><strong><?= e($x['role']) ?></strong> · <?= e($x['class']) ?></p>
+     <p><?= e($x['bio']) ?></p>
+     <div class="skill-chips"><?php foreach($x['skills'] as $skill): ?><span><?= e($skill) ?></span><?php endforeach; ?></div>
+     <div class="mentor-project-strip"><b><?= e($x['project']) ?></b><b><?= e($x['class']) ?></b></div>
+     <a class="pm-btn primary" href="<?= e($x['url']) ?>"><?= e(tr('Lihat Profil','View Profile')) ?> ↗</a>
+    </div>
+   </article>
+  <?php endforeach; ?>
+ </section>
+
+ <section class="mentor-grid-section">
+  <div class="pm-section-title"><h2><?= e(tr('Semua Inovator','All Innovators')) ?></h2></div>
+  <div class="mentor-directory-grid">
+   <?php foreach($others as $x): ?>
+    <article class="mentor-card pm-card">
+     <img src="<?= e($x['image']) ?>" alt="<?= e('Potret '.$x['full']) ?>">
+     <div>
+      <h3><?= e($x['name']) ?></h3>
+      <p><strong><?= e($x['role']) ?></strong><br><?= e($x['class'].' · '.$x['project']) ?></p>
+      <p><?= e($x['bio']) ?></p>
+      <div class="skill-chips"><?php foreach(array_slice($x['skills'],0,3) as $skill): ?><span><?= e($skill) ?></span><?php endforeach; ?></div>
+      <div class="mentor-card__bottom">
+       <span><strong><?= e($x['stat'][0]) ?></strong> <?= e($x['stat'][1]) ?></span>
+       <a href="<?= e($x['url']) ?>"><?= e(tr('Profil','Profile')) ?> →</a>
+      </div>
+     </div>
+    </article>
+   <?php endforeach; ?>
+  </div>
+ </section>
+
+ <section class="pm-ribbon pm-card">
+  <div>
+   <h2><?= tr('Inovasi pelajar wajar diberi <em style="color:var(--pm-pink);font-style:normal">pentas yang jelas.</em>','Student innovation deserves <em style="color:var(--pm-pink);font-style:normal">a visible stage.</em>') ?></h2>
+   <p><?= e(tr('HubInovasi mempamerkan pelajar sebagai pembina idea, produk dan penyelesaian sebenar.', 'HubInovasi showcases students as builders of ideas, products and real solutions.')) ?></p>
+  </div>
+  <a class="pm-btn primary" href="explore.php"><?= e(tr('Lihat Projek','View Projects')) ?> ↗</a>
+  <a class="pm-btn" href="mentor.php"><?= e(tr('Lihat Mentor','View Mentors')) ?> →</a>
+ </section>
+</div></main>
+<?php require __DIR__.'/includes/footer.php'; ?>
+
+
+
+
+
