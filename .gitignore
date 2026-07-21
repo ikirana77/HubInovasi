@@ -7,3 +7,4 @@ uploads/projects/*/*/*
 !uploads/projects/.htaccess
 
 /vendor/
+database/cpanel_import/
