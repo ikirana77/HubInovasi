@@ -158,3 +158,40 @@
     .admin-detail-header .container { flex-wrap: wrap; }
     .admin-detail-header .admin-top-actions { order: 3; width: 100%; margin-left: 0; }
 }
+
+/* CP mobile header fix: show full logo and make menu readable */
+@media (max-width: 760px) {
+    .site-header__inner {
+        min-height: 82px;
+        gap: 14px;
+    }
+
+    .brand__logo {
+        width: min(58vw, 220px);
+        max-height: 58px;
+        object-fit: contain;
+    }
+
+    .site-header .brand--image {
+        min-width: min(58vw, 220px);
+    }
+
+    .site-header .nav-toggle {
+        flex: 0 0 64px;
+        width: 64px;
+        height: 58px;
+    }
+
+    .site-header .primary-nav {
+        inset: 82px 0 0;
+        z-index: 100;
+        padding: 24px 28px 36px;
+        background: #fffdf9;
+    }
+
+    .site-header .primary-nav a {
+        white-space: normal;
+        font-size: 1.15rem;
+        line-height: 1.2;
+    }
+}

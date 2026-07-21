@@ -68,7 +68,7 @@ if ($publicMockup) {
     <?php foreach ($extraStylesheets as $stylesheet): ?>
         <link rel="stylesheet" href="<?= e((string) $stylesheet) ?>">
     <?php endforeach; ?>
-    <link rel="stylesheet" href="assets/css/branding.css">
+    <link rel="stylesheet" href="assets/css/branding.css?v=20260721-mobile-header">
     <script src="assets/js/main.js" defer></script>
 </head>
 <body<?= $bodyClass !== '' ? ' class="' . e($bodyClass) . '"' : '' ?>
@@ -78,9 +78,7 @@ if ($publicMockup) {
     <header class="site-header<?= ($homeLaunchpad || $publicMockup) ? ' site-header--launchpad' : '' ?><?= $publicMockup ? ' site-header--public-mockup' : '' ?>">
         <div class="container site-header__inner">
             <a class="brand brand--image" href="index.php" aria-label="HubInovasi KVKS — <?= e(tr('halaman utama', 'home page')) ?>">
-                <picture>
-                    <source media="(max-width: 640px)" srcset="assets/images/branding/hubinovasi-symbol.png">
-                    <img class="brand__logo" src="assets/images/branding/hubinovasi-kvks-primary.png" alt="HubInovasi KVKS — <?= e(tr('Platform Inovasi Pelajar', 'Student Innovation Platform')) ?>">
+                <picture>                    <img class="brand__logo" src="assets/images/branding/hubinovasi-kvks-primary.png" alt="HubInovasi KVKS — <?= e(tr('Platform Inovasi Pelajar', 'Student Innovation Platform')) ?>">
                 </picture>
             </a>
 
