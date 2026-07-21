@@ -195,3 +195,85 @@
         line-height: 1.2;
     }
 }
+
+/* Mobile menu fix: full dropdown, visible and scrollable */
+@media (max-width: 1020px) {
+    body.nav-open {
+        overflow: hidden;
+    }
+
+    .site-header {
+        position: relative;
+        z-index: 200;
+    }
+
+    .site-header__inner {
+        min-height: 82px;
+    }
+
+    .brand__logo {
+        width: min(58vw, 220px);
+        max-height: 58px;
+        object-fit: contain;
+    }
+
+    .site-header .brand--image {
+        min-width: min(58vw, 220px);
+    }
+
+    .site-header .primary-nav {
+        position: fixed;
+        top: 82px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 190;
+        display: none;
+        max-height: calc(100vh - 82px);
+        padding: 18px 24px 96px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        background: #fffdf9;
+        border-top: 1px solid rgba(17, 27, 100, .14);
+    }
+
+    .nav-open .site-header .primary-nav {
+        display: block;
+    }
+
+    .site-header .primary-nav ul {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+    }
+
+    .site-header .primary-nav li {
+        border-bottom: 1px solid rgba(17, 27, 100, .14);
+    }
+
+    .site-header .primary-nav a {
+        display: block;
+        padding: 15px 4px;
+        white-space: normal;
+        font-size: 1rem;
+        line-height: 1.2;
+    }
+
+    .site-header .primary-nav .nav-cta {
+        width: 100%;
+        margin-top: 18px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 420px) {
+    .site-header .primary-nav {
+        padding-bottom: 120px;
+    }
+
+    .site-header .primary-nav a {
+        padding-block: 13px;
+        font-size: .96rem;
+    }
+}

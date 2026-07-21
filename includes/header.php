@@ -68,7 +68,7 @@ if ($publicMockup) {
     <?php foreach ($extraStylesheets as $stylesheet): ?>
         <link rel="stylesheet" href="<?= e((string) $stylesheet) ?>">
     <?php endforeach; ?>
-    <link rel="stylesheet" href="assets/css/branding.css?v=20260721-mobile-header">
+    <link rel="stylesheet" href="assets/css/branding.css?v=20260721-menu-scroll">
     <script src="assets/js/main.js" defer></script>
 </head>
 <body<?= $bodyClass !== '' ? ' class="' . e($bodyClass) . '"' : '' ?>
