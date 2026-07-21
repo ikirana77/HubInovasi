@@ -59,6 +59,10 @@ function hub_programmes(): array
         'HSK' => tr('HSK — Seni Kulinari', 'HSK — Culinary Arts'),
         'HBP' => tr('HBP — Bakeri dan Pastri', 'HBP — Bakery and Pastry'),
         'OPP' => tr('OPP — Operasi Pembuatan Perabot', 'OPP — Furniture Manufacturing Operations'),
+        'PTK' => tr('PTK — Pentadbiran Kolej', 'PTK — College Administration'),
+        'BADAR' => tr('BADAR — BADAR', 'BADAR — BADAR'),
+        'HEP' => tr('HEP — Hal Ehwal Pelajar', 'HEP — Student Affairs'),
+        'KAUN' => tr('KAUN — Kaunseling', 'KAUN — Counselling'),
     ];
 }
 
