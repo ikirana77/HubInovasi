@@ -704,3 +704,67 @@ if (submissionForm && submissionForm.classList.contains('adaptive-submission-for
     syncMentorOptions();
     showStep(currentStep);
 }
+
+/* UX patch: guided submit project form */
+(() => {
+    const form = document.getElementById('submission-form');
+    if (!form) return;
+
+    const fillButtons = form.querySelectorAll('[data-fill-target][data-fill-text]');
+    fillButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const target = form.querySelector(`[name="${button.dataset.fillTarget}"]`);
+            if (!target) return;
+            const text = String(button.dataset.fillText || '').trim();
+            const current = String(target.value || '').trim();
+            target.value = current ? `${current}\n${text}` : text;
+            target.dispatchEvent(new Event('input', { bubbles: true }));
+            target.focus();
+        });
+    });
+
+    const stepItems = document.querySelectorAll('.pitch-guide [data-step-fields]');
+    const progressCount = document.querySelector('[data-progress-count]');
+    const progressMeter = document.querySelector('[data-progress-meter]');
+    const requiredCount = document.querySelector('[data-required-count]');
+    const requiredFields = Array.from(form.querySelectorAll('[required]'));
+
+    const fieldHasValue = (fieldName) => {
+        return Array.from(form.querySelectorAll(`[name="${fieldName}"]`)).some((field) => {
+            if (field.type === 'checkbox' || field.type === 'radio') return field.checked;
+            return String(field.value || '').trim() !== '';
+        });
+    };
+
+    const updateProgress = () => {
+        let started = 0;
+        stepItems.forEach((item) => {
+            const fields = String(item.dataset.stepFields || '').split(',').map((x) => x.trim()).filter(Boolean);
+            const isStarted = fields.some(fieldHasValue);
+            item.classList.toggle('is-started', isStarted);
+            if (isStarted) started += 1;
+        });
+
+        if (progressCount) progressCount.textContent = `${started}/${stepItems.length || 6}`;
+        if (progressMeter) progressMeter.value = started;
+
+        if (requiredCount) {
+            const remaining = requiredFields.filter((field) => {
+                if (field.disabled || field.readOnly) return false;
+                if (field.type === 'checkbox' || field.type === 'radio') {
+                    const group = field.name ? requiredFields.filter((other) => other.name === field.name) : [field];
+                    return !group.some((other) => other.checked);
+                }
+                return String(field.value || '').trim() === '';
+            }).filter((field, index, fields) => fields.findIndex((other) => other.name === field.name) === index).length;
+
+            requiredCount.textContent = remaining === 0
+                ? (form.dataset.requiredComplete || 'Semua medan wajib sudah diisi. Anda boleh hantar untuk semakan.')
+                : (form.dataset.requiredRemaining || '{count} medan wajib belum diisi sebelum boleh hantar semakan.').replace('{count}', String(remaining));
+        }
+    };
+
+    form.addEventListener('input', updateProgress);
+    form.addEventListener('change', updateProgress);
+    updateProgress();
+})();

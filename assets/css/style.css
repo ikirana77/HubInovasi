@@ -1456,3 +1456,103 @@ button, input, select, textarea { font-family: 'Inter', Arial, sans-serif !impor
     object-fit: cover;
     object-position: center top;
 }
+
+/* UX patch: guided submit project form */
+.pitch-progress {
+    display: grid;
+    gap: 8px;
+    margin: 22px 0 6px;
+    padding: 14px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid #414141;
+    border-radius: 8px;
+}
+
+.pitch-progress strong {
+    color: var(--tangerine);
+    font: 700 1.35rem 'Space Grotesk', sans-serif;
+}
+
+.pitch-progress span {
+    color: #d2d2d2;
+    font-size: .78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.pitch-progress small {
+    color: #fff4ec;
+    font-size: .78rem;
+    line-height: 1.35;
+}
+
+.pitch-progress meter {
+    width: 100%;
+    height: 9px;
+}
+
+.pitch-guide li.is-started span::after {
+    content: ' ✓';
+    color: #edffc0;
+}
+
+.starter-bank {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 16px;
+    background: #f8f6f2;
+    border: 1px dashed #d7cec4;
+    border-radius: 8px;
+}
+
+.starter-bank--soft {
+    background: #f7fbfa;
+    border-color: #bcded5;
+}
+
+.starter-bank p {
+    margin: 0;
+    color: #5f5852;
+    font-size: .86rem;
+}
+
+.starter-bank p strong {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--ink);
+    font: 700 1rem 'Space Grotesk', sans-serif;
+}
+
+.starter-bank div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.starter-bank button {
+    padding: 8px 11px;
+    background: white;
+    border: 1px solid #d8d0c8;
+    border-radius: 7px;
+    color: var(--ink);
+    cursor: pointer;
+    font: 700 .78rem 'Inter', sans-serif;
+}
+
+.starter-bank button:hover,
+.starter-bank button:focus {
+    border-color: var(--tangerine);
+    outline: 3px solid rgba(255, 107, 0, .12);
+}
+
+@media (max-width: 520px) {
+    .starter-bank {
+        padding: 15px;
+    }
+
+    .starter-bank button {
+        width: 100%;
+        text-align: left;
+    }
+}
